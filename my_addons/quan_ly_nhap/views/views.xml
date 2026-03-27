@@ -1,0 +1,68 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_phieu_nhap_tree">
+            <field name="name">quan_ly_nhap.phieu_nhap.tree</field>
+            <field name="model">quan_ly_nhap.phieu_nhap</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="trang_thai == 'du_thao'" decoration-success="trang_thai == 'da_xac_nhan'">
+                    <field name="name"/>
+                    <field name="ngay_nhap"/>
+                    <field name="nha_cung_cap_id"/>
+                    <field name="tong_gia_tri"/>
+                    <field name="trang_thai" widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_phieu_nhap_form">
+            <field name="name">quan_ly_nhap.phieu_nhap.form</field>
+            <field name="model">quan_ly_nhap.phieu_nhap</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_confirm" type="object" string="Xác Nhận Nhập Kho" class="oe_highlight" invisible="trang_thai != 'du_thao'"/>
+                        <field name="trang_thai" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="nha_cung_cap_id"/>
+                                <field name="ngay_nhap"/>
+                            </group>
+                            <group>
+                                <field name="nhan_vien_id"/>
+                                <field name="tong_gia_tri"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Danh sách hàng nhập (kg)">
+                                <field name="line_ids">
+                                    <tree editable="bottom">
+                                        <field name="san_pham_id"/>
+                                        <field name="ma_lo"/>
+                                        <field name="so_luong_nhap"/>
+                                        <field name="don_gia"/>
+                                        <field name="thanh_tien"/>
+                                        <field name="chat_luong"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_quan_ly_nhap">
+            <field name="name">Phiếu Nhập Kho</field>
+            <field name="res_model">quan_ly_nhap.phieu_nhap</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="Thiên Thời " id="menu_root"/>
+        <menuitem name="Quản Lý Nhập" id="menu_nhap_kho" parent="menu_root" action="action_quan_ly_nhap"/>
+    </data>
+</odoo>
