@@ -41,7 +41,6 @@ class ChiTietNhap(models.Model):
     phieu_id = fields.Many2one('quan_ly_nhap.phieu_nhap', string='Phiếu Nhập', ondelete='cascade')
     san_pham_id = fields.Many2one('product.product', string='Sản Phẩm', required=True)
     
-    # Mặc định tính bằng KG như Hào yêu cầu
     so_luong_nhap = fields.Float(string='Số Lượng (kg)', default=1.0)
     don_gia = fields.Float(string='Đơn Giá')
     thanh_tien = fields.Float(string='Thành Tiền', compute='_compute_thanh_tien', store=True)
@@ -52,7 +51,6 @@ class ChiTietNhap(models.Model):
         ('loi_nang', 'Lỗi nặng (Trả hàng)')
     ], string='Đánh giá chất lượng', default='tot')
 
-    # Phần mã Lô chuẩn doanh nghiệp Hào muốn
     ma_lo = fields.Char(string='Mã Số Lô', help="Định dạng: YYMMDD-Vendor-Product")
 
     @api.depends('so_luong_nhap', 'don_gia')

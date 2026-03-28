@@ -1,0 +1,22 @@
+<odoo>
+    <record id="action_khach_hang_thien_thoi" model="ir.actions.act_window">
+        <field name="name">Khách Hàng</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('loai_doi_tac', 'in', ['khach_hang', 'ca_hai'])]</field>
+        <field name="context">{'default_loai_doi_tac': 'khach_hang'}</field>
+    </record>
+
+    <record id="action_nha_cung_cap_thien_thoi" model="ir.actions.act_window">
+        <field name="name">Nhà Cung Cấp</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('loai_doi_tac', 'in', ['nha_cung_cap', 'ca_hai'])]</field>
+        <field name="context">{'default_loai_doi_tac': 'nha_cung_cap'}</field>
+    </record>
+
+    <menuitem id="menu_thien_thoi_root" name="Thiên Thời ERP" sequence="1"/>
+    <menuitem id="menu_dan_muc_base" name="Danh Mục" parent="menu_thien_thoi_root" sequence="10"/>
+    <menuitem id="menu_khach_hang" name="Khách Hàng" parent="menu_dan_muc_base" action="action_khach_hang_thien_thoi" sequence="1"/>
+    <menuitem id="menu_nha_cung_cap" name="Nhà Cung Cấp" parent="menu_dan_muc_base" action="action_nha_cung_cap_thien_thoi" sequence="2"/>
+</odoo>

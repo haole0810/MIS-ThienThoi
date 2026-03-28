@@ -1,0 +1,11 @@
+<odoo>
+    <record id="action_product_thien_thoi" model="ir.actions.act_window">
+        <field name="name">Danh Mục Sản Phẩm</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <menuitem id="menu_thien_thoi_root" name="Thiên Thời ERP" sequence="1"/>
+    <menuitem id="menu_dan_muc_base" name="Danh Mục" parent="menu_thien_thoi_root" sequence="10"/>
+    <menuitem id="menu_san_pham_base" name="Sản Phẩm" parent="menu_dan_muc_base" action="action_product_thien_thoi"/>
+</odoo>
