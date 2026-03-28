@@ -1,13 +1,13 @@
 from odoo import models, fields
 
 class ResPartner(models.Model):
-    _inherit = 'res.partner' # Kế thừa bảng đối tác của Odoo
+    _inherit = 'res.partner'
 
-    # Thêm trường phân loại để lọc cho Nhập/Xuất kho
-    loai_doi_tac = fields.Selection([
-        ('khach_hang', 'Khách hàng (Mua bánh)'),
-        ('nha_cung_cap', 'Nhà cung cấp (Bán phôi/Gia vị)'),
-        ('ca_hai', 'Vừa là khách vừa là nhà cung cấp')
-    ], string="Phân loại Đối tác", default='khach_hang')
+    partner_type = fields.Selection([
+        ('supplier', 'Nhà cung cấp'),
+        ('customer', 'Khách hàng lẻ'),
+        ('wholesaler', 'Khách sỉ')
+    ], string='Phân loại đối tác', default='supplier')
     
-    ma_doi_tac_thien_thoi = fields.Char(string="Mã Đối Tác Riêng")
+    # name, phone, email, street đã có sẵn trong res.partner gốc, không cần khai báo lại
+    comment_thien_thoi = fields.Text(string='Ghi chú nghiệp vụ')

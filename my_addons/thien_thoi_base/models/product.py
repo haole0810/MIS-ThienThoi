@@ -1,10 +1,20 @@
 from odoo import models, fields
 
-class ProductTemplate(models.Model):
-    _inherit = 'product.template' # Kế thừa bảng Sản phẩm gốc
+class ThienThoiProduct(models.Model):
+    _name = 'thien_thoi.product'
+    _description = 'Sản phẩm Thiên Thời'
 
-    # Chỉ thêm những gì Thiên Thời cần mà Odoo chưa có
-    loai_san_pham_thien_thoi = fields.Selection([
-        ('thô', 'Nguyên liệu (Bánh phôi)'),
-        ('hoàn chỉnh', 'Thành phẩm (Đóng gói)')
-    ], string="Loại Sản Phẩm", default='thô')
+    # Các thuộc tính dựa trên Class Diagram
+    name = fields.Char(string='Tên sản phẩm', required=True)
+    default_code = fields.Char(string='Mã nội bộ (SKU)')
+    product_type = fields.Selection([
+        ('raw_material', 'Nguyên liệu (Bánh phôi/Gia vị)'),
+        ('finished_product', 'Thành phẩm (Bánh tráng trộn)'),
+        ('packaging', 'Bao bì')
+    ], string='Loại sản phẩm', default='raw_material')
+    
+    uom_id = fields.Char(string='Đơn vị tính', default='kg') # Thiên Thời tính theo kg
+    list_price = fields.Float(string='Giá bán Niêm yết')
+    standard_price = fields.Float(string='Giá vốn ước tính')
+    
+    description = fields.Text(string='Mô tả sản phẩm')

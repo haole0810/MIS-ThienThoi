@@ -1,22 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="action_khach_hang_thien_thoi" model="ir.actions.act_window">
-        <field name="name">Khách Hàng</field>
-        <field name="res_model">res.partner</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="domain">[('loai_doi_tac', 'in', ['khach_hang', 'ca_hai'])]</field>
-        <field name="context">{'default_loai_doi_tac': 'khach_hang'}</field>
+    <record id="view_thien_thoi_partner_tree" model="ir.ui.view">
+        <field name="name">res.partner.tree.thienthoi</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Danh sách đối tác">
+                <field name="name" string="Tên đơn vị"/>
+                <field name="partner_type" string="Phân loại"/>
+                <field name="phone" string="Điện thoại"/>
+                <field name="street" string="Địa chỉ"/>
+            </tree>
+        </field>
     </record>
 
-    <record id="action_nha_cung_cap_thien_thoi" model="ir.actions.act_window">
-        <field name="name">Nhà Cung Cấp</field>
-        <field name="res_model">res.partner</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="domain">[('loai_doi_tac', 'in', ['nha_cung_cap', 'ca_hai'])]</field>
-        <field name="context">{'default_loai_doi_tac': 'nha_cung_cap'}</field>
+    <record id="view_partner_form_thienthoi" model="ir.ui.view">
+        <field name="name">res.partner.form.thienthoi</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='function']" position="after">
+                <field name="partner_type" string="Phân loại Thiên Thời"/>
+                <field name="comment_thien_thoi"/>
+            </xpath>
+        </field>
     </record>
 
-    <menuitem id="menu_thien_thoi_root" name="Thiên Thời ERP" sequence="1"/>
-    <menuitem id="menu_dan_muc_base" name="Danh Mục" parent="menu_thien_thoi_root" sequence="10"/>
-    <menuitem id="menu_khach_hang" name="Khách Hàng" parent="menu_dan_muc_base" action="action_khach_hang_thien_thoi" sequence="1"/>
-    <menuitem id="menu_nha_cung_cap" name="Nhà Cung Cấp" parent="menu_dan_muc_base" action="action_nha_cung_cap_thien_thoi" sequence="2"/>
+    <record id="action_thien_thoi_partner" model="ir.actions.act_window">
+        <field name="name">Đối tác Thiên Thời</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_thien_thoi_root" name="Hệ thống Thiên Thời" sequence="10"/>
+
+    <menuitem id="menu_thien_thoi_partner" 
+              name="Đối tác (NCC/Khách)" 
+              parent="menu_thien_thoi_root" 
+              action="action_thien_thoi_partner" 
+              sequence="20"/>
 </odoo>
