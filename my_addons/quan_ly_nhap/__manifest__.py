@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "Quản Lý Nhập Kho Thiên Thời",
 
@@ -17,16 +16,13 @@
     'category': 'Inventory',
     'version': '1.0',
 
-    # QUAN TRỌNG: Phải thêm 'product' để sử dụng danh mục sản phẩm của Odoo
     'depends': ['base', 'product'],
 
-    # Các file XML phải được liệt kê đúng thứ tự để Odoo load giao diện
     'data': [
-        'security/ir.model.access.csv', # Mở khóa dấu thăng (#) để cấp quyền truy cập
-        'views/views.xml',
+        'security/ir.model.access.csv',
     ],
     
     'installable': True,
-    'application': True, # Đánh dấu là ứng dụng chính để dễ tìm trong danh sách Apps
+    'application': True, 
     'auto_install': False,
 }

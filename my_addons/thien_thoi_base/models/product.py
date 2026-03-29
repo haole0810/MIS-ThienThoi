@@ -4,7 +4,6 @@ class ThienThoiProduct(models.Model):
     _name = 'thien_thoi.product'
     _description = 'Sản phẩm Thiên Thời'
 
-    # Các thuộc tính dựa trên Class Diagram
     name = fields.Char(string='Tên sản phẩm', required=True)
     default_code = fields.Char(string='Mã nội bộ (SKU)')
     product_type = fields.Selection([
