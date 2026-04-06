@@ -16,10 +16,11 @@
     'category': 'Inventory',
     'version': '1.0',
 
-    'depends': ['base', 'product'],
+    'depends': ['base', 'thien_thoi_base'],
 
     'data': [
         'security/ir.model.access.csv',
+        'views/views.xml'
     ],
     
     'installable': True,

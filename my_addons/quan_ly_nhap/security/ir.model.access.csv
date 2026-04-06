@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_phieu_nhap,access_phieu_nhap,model_quan_ly_nhap_phieu_nhap,base.group_user,1,1,1,1
-access_chi_tiet_nhap,access_chi_tiet_nhap,model_quan_ly_nhap_chi_tiet_nhap,base.group_user,1,1,1,1
+access_quan_ly_nhap_phieu_nhap,quan_ly_nhap.phieu_nhap,model_quan_ly_nhap_phieu_nhap,base.group_user,1,1,1,1
+access_quan_ly_nhap_chi_tiet_nhap,quan_ly_nhap.chi_tiet_nhap,model_quan_ly_nhap_chi_tiet_nhap,base.group_user,1,1,1,1

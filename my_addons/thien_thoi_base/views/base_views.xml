@@ -1,0 +1,58 @@
+<odoo>
+    <data>
+        <record id="action_khach_hang" model="ir.actions.act_window">
+            <field name="name">Khách Hàng</field>
+            <field name="res_model">thien_thoi_base.khach_hang</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="action_nha_cung_cap" model="ir.actions.act_window">
+            <field name="name">Nhà Cung Cấp</field>
+            <field name="res_model">thien_thoi_base.nha_cung_cap</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="view_san_pham_tree" model="ir.ui.view">
+            <field name="name">san.pham.tree</field>
+            <field name="model">thien_thoi_base.san_pham</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ma_sp"/>
+                    <field name="ten_sp"/>
+                    <field name="loai_sp"/>
+                    <field name="don_vi_tinh"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_san_pham" model="ir.actions.act_window">
+            <field name="name">Sản Phẩm</field>
+            <field name="res_model">thien_thoi_base.san_pham</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="action_kho" model="ir.actions.act_window">
+            <field name="name">Danh Mục Kho</field>
+            <field name="res_model">thien_thoi_base.kho</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="action_ton_kho" model="ir.actions.act_window">
+            <field name="name">Tồn Kho</field>
+            <field name="res_model">thien_thoi_base.ton_kho</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_thien_thoi_base_root" name="Dữ liệu Nền (Base)"/>
+        
+        <menuitem id="menu_san_pham" name="Sản Phẩm" parent="menu_thien_thoi_base_root" action="action_san_pham" sequence="10"/>
+        
+        <menuitem id="menu_doi_tac" name="Đối Tác" parent="menu_thien_thoi_base_root" sequence="20"/>
+        <menuitem id="menu_khach_hang" name="Khách Hàng" parent="menu_doi_tac" action="action_khach_hang"/>
+        <menuitem id="menu_nha_cung_cap" name="Nhà Cung Cấp" parent="menu_doi_tac" action="action_nha_cung_cap"/>
+        
+        <menuitem id="menu_kho_base" name="Cơ sở hạ tầng Kho" parent="menu_thien_thoi_base_root" sequence="30"/>
+        <menuitem id="menu_danh_muc_kho" name="Danh Sách Kho" parent="menu_kho_base" action="action_kho"/>
+        <menuitem id="menu_ton_kho" name="Tồn Kho Hiện Tại" parent="menu_kho_base" action="action_ton_kho"/>
+
+    </data>
+</odoo>

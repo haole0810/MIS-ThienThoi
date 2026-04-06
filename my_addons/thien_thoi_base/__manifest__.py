@@ -6,8 +6,7 @@
     'depends': ['base','product', 'stock'], 
     'data': [
         'security/ir.model.access.csv',
-        'views/partner_views.xml',
-        'views/product_views.xml'
+        'views/base_views.xml'
         
     ],
     'installable': True,

@@ -1,68 +1,67 @@
 <odoo>
     <data>
-        <record model="ir.ui.view" id="view_phieu_nhap_tree">
+        <record id="view_phieu_nhap_tree" model="ir.ui.view">
             <field name="name">quan_ly_nhap.phieu_nhap.tree</field>
             <field name="model">quan_ly_nhap.phieu_nhap</field>
             <field name="arch" type="xml">
-                <tree decoration-info="trang_thai == 'du_thao'" decoration-success="trang_thai == 'da_xac_nhan'">
-                    <field name="name"/>
+                <tree decoration-info="trang_thai == 'nhap'" decoration-success="trang_thai == 'da_xac_nhan'">
+                    <field name="ma_phieu"/>
                     <field name="ngay_nhap"/>
                     <field name="nha_cung_cap_id"/>
+                    <field name="kho_id"/>
                     <field name="tong_gia_tri"/>
                     <field name="trang_thai" widget="badge"/>
                 </tree>
             </field>
         </record>
 
-        <record model="ir.ui.view" id="view_phieu_nhap_form">
-            <field name="name">quan_ly_nhap.phieu_nhap.form</field>
-            <field name="model">quan_ly_nhap.phieu_nhap</field>
-            <field name="arch" type="xml">
-                <form>
-                    <header>
-                        <button name="action_confirm" type="object" string="Xác Nhận Nhập Kho" class="oe_highlight" invisible="trang_thai != 'du_thao'"/>
-                        <field name="trang_thai" widget="statusbar"/>
-                    </header>
-                    <sheet>
-                        <div class="oe_title">
-                            <h1><field name="name"/></h1>
-                        </div>
-                        <group>
-                            <group>
-                                <field name="nha_cung_cap_id"/>
-                                <field name="ngay_nhap"/>
-                            </group>
-                            <group>
-                                <field name="nhan_vien_id"/>
-                                <field name="tong_gia_tri"/>
-                            </group>
-                        </group>
-                        <notebook>
-                            <page string="Danh sách hàng nhập (kg)">
-                                <field name="line_ids">
-                                    <tree editable="bottom">
-                                        <field name="san_pham_id"/>
-                                        <field name="ma_lo"/>
-                                        <field name="so_luong_nhap"/>
-                                        <field name="don_gia"/>
-                                        <field name="thanh_tien"/>
-                                        <field name="chat_luong"/>
-                                    </tree>
-                                </field>
-                            </page>
-                        </notebook>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+<record id="view_phieu_nhap_form" model="ir.ui.view">
+    <field name="model">quan_ly_nhap.phieu_nhap</field>
+    <field name="arch" type="xml">
+        <form string="Phiếu Nhập Kho">
+<header>
+    <button name="xacNhan" string="Xác nhận" type="object" 
+            class="oe_highlight" 
+            attrs="{'invisible': [('trang_thai', '=', 'da_xac_nhan')]}"/>
+            
+    <button name="button_cancel" string="Hủy xác nhận (Sửa lỗi)" type="object" 
+            confirm="Bạn có chắc chắn muốn trừ kho và sửa lại phiếu này không?"
+            attrs="{'invisible': [('trang_thai', '=', 'nhap')]}"/>
+            
+    <field name="trang_thai" widget="statusbar"/>
+</header>
+            <sheet>
+                <group>
+                    <field name="ma_phieu" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
+                    <field name="kho_id" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
+                    <field name="nha_cung_cap_id" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
+                    <field name="ngay_nhap" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
+                </group>
+                <notebook>
+                    <page string="Chi tiết sản phẩm">
+                        <field name="chi_tiet_nhap_ids" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}">
+                            <tree editable="bottom">
+                                <field name="san_pham_id"/>
+                                <field name="so_luong_nhap"/>
+                                <field name="don_gia"/>
+                                <field name="chat_luong"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
 
-        <record model="ir.actions.act_window" id="action_quan_ly_nhap">
+        <record id="action_phieu_nhap" model="ir.actions.act_window">
             <field name="name">Phiếu Nhập Kho</field>
             <field name="res_model">quan_ly_nhap.phieu_nhap</field>
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem name="Thiên Thời " id="menu_root"/>
-        <menuitem name="Quản Lý Nhập" id="menu_nhap_kho" parent="menu_root" action="action_quan_ly_nhap"/>
+        <menuitem id="menu_quan_ly_nhap_root" name="Nhập Kho (Inbound)"/>
+        <menuitem id="menu_phieu_nhap" name="Phiếu Nhập Kho" parent="menu_quan_ly_nhap_root" action="action_phieu_nhap"/>
+
     </data>
 </odoo>

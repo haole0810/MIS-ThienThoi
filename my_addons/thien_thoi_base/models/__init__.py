@@ -1,3 +1,3 @@
-# -*- coding: utf-8 -*-
-from . import product
-from . import res_partner
+from . import san_pham
+from . import doi_tac
+from . import kho_base

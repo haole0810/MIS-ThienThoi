@@ -1,3 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_thien_thoi_product,thien_thoi.product,model_thien_thoi_product,base.group_user,1,1,1,1
-access_res_partner_thienthoi,res.partner,base.model_res_partner,base.group_user,1,1,1,1
+access_thien_thoi_base_san_pham,thien_thoi_base.san_pham,model_thien_thoi_base_san_pham,base.group_user,1,1,1,1
+access_thien_thoi_base_khach_hang,thien_thoi_base.khach_hang,model_thien_thoi_base_khach_hang,base.group_user,1,1,1,1
+access_thien_thoi_base_nha_cung_cap,thien_thoi_base.nha_cung_cap,model_thien_thoi_base_nha_cung_cap,base.group_user,1,1,1,1
+access_thien_thoi_base_kho,thien_thoi_base.kho,model_thien_thoi_base_kho,base.group_user,1,1,1,1
+access_thien_thoi_base_ton_kho,thien_thoi_base.ton_kho,model_thien_thoi_base_ton_kho,base.group_user,1,1,1,1
