@@ -55,7 +55,7 @@ class PhieuNhapKho(models.Model):
 
     def write(self, vals):
         for phieu in self:
-            if phieu.trang_thai == 'da_xac_nhan':
+            if phieu.trang_thai == 'da_xac_nhan' and 'trang_thai' not in vals:
                 raise UserError("Hệ thống Thiên Thời thông báo: Phiếu đã xác nhận không được phép sửa đổi!")
         return super(PhieuNhapKho, self).write(vals)
 

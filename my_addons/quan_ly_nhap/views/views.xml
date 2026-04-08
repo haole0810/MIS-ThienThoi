@@ -18,39 +18,39 @@
 <record id="view_phieu_nhap_form" model="ir.ui.view">
     <field name="model">quan_ly_nhap.phieu_nhap</field>
     <field name="arch" type="xml">
-        <form string="Phiếu Nhập Kho">
-<header>
-    <button name="xacNhan" string="Xác nhận" type="object" 
-            class="oe_highlight" 
-            attrs="{'invisible': [('trang_thai', '=', 'da_xac_nhan')]}"/>
-            
-    <button name="button_cancel" string="Hủy xác nhận (Sửa lỗi)" type="object" 
-            confirm="Bạn có chắc chắn muốn trừ kho và sửa lại phiếu này không?"
-            attrs="{'invisible': [('trang_thai', '=', 'nhap')]}"/>
-            
-    <field name="trang_thai" widget="statusbar"/>
-</header>
-            <sheet>
-                <group>
-                    <field name="ma_phieu" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
-                    <field name="kho_id" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
-                    <field name="nha_cung_cap_id" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
-                    <field name="ngay_nhap" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}"/>
-                </group>
-                <notebook>
-                    <page string="Chi tiết sản phẩm">
-                        <field name="chi_tiet_nhap_ids" attrs="{'readonly': [('trang_thai', '=', 'da_xac_nhan')]}">
-                            <tree editable="bottom">
-                                <field name="san_pham_id"/>
-                                <field name="so_luong_nhap"/>
-                                <field name="don_gia"/>
-                                <field name="chat_luong"/>
-                            </tree>
-                        </field>
-                    </page>
-                </notebook>
-            </sheet>
-        </form>
+   <form string="Phiếu Nhập Kho">
+    <header>
+        <button name="xacNhan" string="Xác nhận" type="object" 
+                class="oe_highlight" 
+                invisible="trang_thai == 'da_xac_nhan'"/>
+                
+        <button name="button_cancel" string="Hủy xác nhận (Sửa lỗi)" type="object" 
+                confirm="Hệ thống sẽ trừ lại tồn kho, bạn có chắc chắn muốn sửa lại phiếu này không?"
+                invisible="trang_thai == 'nhap'"/>
+                
+        <field name="trang_thai" widget="statusbar"/>
+    </header>
+    <sheet>
+        <group>
+            <field name="ma_phieu" readonly="trang_thai == 'da_xac_nhan'"/>
+            <field name="kho_id" readonly="trang_thai == 'da_xac_nhan'"/>
+            <field name="nha_cung_cap_id" readonly="trang_thai == 'da_xac_nhan'"/>
+            <field name="ngay_nhap" readonly="trang_thai == 'da_xac_nhan'"/>
+        </group>
+        <notebook>
+            <page string="Chi tiết sản phẩm">
+                <field name="chi_tiet_nhap_ids" readonly="trang_thai == 'da_xac_nhan'">
+                    <tree editable="bottom">
+                        <field name="san_pham_id"/>
+                        <field name="so_luong_nhap"/>
+                        <field name="don_gia"/>
+                        <field name="chat_luong"/>
+                    </tree>
+                </field>
+            </page>
+        </notebook>
+    </sheet>
+</form>
     </field>
 </record>
 
