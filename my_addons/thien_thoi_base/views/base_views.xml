@@ -12,18 +12,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <record id="view_san_pham_tree" model="ir.ui.view">
-            <field name="name">san.pham.tree</field>
-            <field name="model">thien_thoi_base.san_pham</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="ma_sp"/>
-                    <field name="ten_sp"/>
-                    <field name="loai_sp"/>
-                    <field name="don_vi_tinh"/>
-                </tree>
-            </field>
-        </record>
         <record id="action_san_pham" model="ir.actions.act_window">
             <field name="name">Sản Phẩm</field>
             <field name="res_model">thien_thoi_base.san_pham</field>
@@ -36,23 +24,73 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record id="view_ton_kho_tree" model="ir.ui.view">
+            <field name="name">thien_thoi_base.ton_kho.tree</field>
+            <field name="model">thien_thoi_base.ton_kho</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="so_luong_hien_tai &lt; muc_toi_thieu">
+                    <field name="san_pham_id" string="Mặt hàng" width="45%"/>
+                    <field name="so_luong_hien_tai" string="Tồn thực tế (kg)" width="25%" class="text-end" header_class="text-end"/>
+                    <field name="kho_id" string="Kho" width="30%"/>
+                    <field name="muc_toi_thieu" column_invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ton_kho_form" model="ir.ui.view">
+            <field name="name">thien_thoi_base.ton_kho.form</field>
+            <field name="model">thien_thoi_base.ton_kho</field>
+            <field name="arch" type="xml">
+                <form string="Thông tin tồn kho">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_history" type="object" class="oe_stat_button" icon="fa-history" string="Lịch sử Nhập"/>
+                        </div>
+                        <group>
+                            <group string="Sản phẩm &amp; Kho">
+                                <field name="san_pham_id" readonly="1"/>
+                                <field name="kho_id" readonly="1"/>
+                            </group>
+                            <group string="Cài đặt cảnh báo">
+                                <field name="so_luong_hien_tai" readonly="1"/>
+                                <field name="muc_toi_thieu" string="Cảnh báo khi dưới (kg)"/>
+                                <field name="ngay_cap_nhat" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ton_kho_search" model="ir.ui.view">
+            <field name="name">thien_thoi_base.ton_kho.search</field>
+            <field name="model">thien_thoi_base.ton_kho</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="san_pham_id"/>
+                    <field name="kho_id"/>
+                    <group expand="0" string="Gom nhóm theo...">
+                        <filter string="Theo Kho" name="group_by_kho" context="{'group_by':'kho_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record id="action_ton_kho" model="ir.actions.act_window">
-            <field name="name">Tồn Kho</field>
+            <field name="name">Báo cáo Tồn Kho</field>
             <field name="res_model">thien_thoi_base.ton_kho</field>
             <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ton_kho_search"/>
+            <field name="context">{'search_default_group_by_kho': 1}</field>
         </record>
 
         <menuitem id="menu_thien_thoi_base_root" name="Dữ liệu Nền (Base)"/>
-        
         <menuitem id="menu_san_pham" name="Sản Phẩm" parent="menu_thien_thoi_base_root" action="action_san_pham" sequence="10"/>
-        
         <menuitem id="menu_doi_tac" name="Đối Tác" parent="menu_thien_thoi_base_root" sequence="20"/>
         <menuitem id="menu_khach_hang" name="Khách Hàng" parent="menu_doi_tac" action="action_khach_hang"/>
         <menuitem id="menu_nha_cung_cap" name="Nhà Cung Cấp" parent="menu_doi_tac" action="action_nha_cung_cap"/>
-        
         <menuitem id="menu_kho_base" name="Cơ sở hạ tầng Kho" parent="menu_thien_thoi_base_root" sequence="30"/>
         <menuitem id="menu_danh_muc_kho" name="Danh Sách Kho" parent="menu_kho_base" action="action_kho"/>
         <menuitem id="menu_ton_kho" name="Tồn Kho Hiện Tại" parent="menu_kho_base" action="action_ton_kho"/>
-
     </data>
 </odoo>

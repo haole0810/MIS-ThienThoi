@@ -3,7 +3,7 @@
     'summary': 'Danh mục dùng chung: Sản phẩm, Đối tác, Kho hàng',
     'version': '1.0',
     'author': 'Lê Tấn Hào - HCMC University of Transport',
-    'depends': ['base','product', 'stock'], 
+    'depends': ['base','product', 'stock', 'quan_ly_nhap'], 
     'data': [
         'security/ir.model.access.csv',
         'views/base_views.xml'

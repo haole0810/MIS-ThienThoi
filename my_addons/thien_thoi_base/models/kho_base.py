@@ -23,3 +23,14 @@ class TonKho(models.Model):
     # Khóa ngoại nối với bảng Sản Phẩm và Kho trong cùng module này
     san_pham_id = fields.Many2one('thien_thoi_base.san_pham', string="Sản phẩm", required=True)
     kho_id = fields.Many2one('thien_thoi_base.kho', string="Kho", required=True)
+
+    def action_view_history(self):
+        self.ensure_one()
+        return {
+            'name': 'Lịch sử nhập hàng: %s' % self.san_pham_id.ten_sp,
+            'type': 'ir.actions.act_window',
+            'res_model': 'quan_ly_nhap.chi_tiet_phieu_nhap',
+            'view_mode': 'tree,form',
+            'domain': [('san_pham_id', '=', self.san_pham_id.id)],
+            'context': {'create': False},
+        }
