@@ -58,3 +58,4 @@ odoo/filestore/
 *.pyc
 odoo/
 odoo.conf
+!my_addons/

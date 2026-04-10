@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_phieu_san_xuat,phieu.san.xuat,model_phieu_san_xuat,base.group_user,1,1,1,1
+access_thien_thoi_bom,thien.thoi.bom,model_thien_thoi_bom,base.group_user,1,1,1,1
+access_thien_thoi_bom_line,thien.thoi.bom.line,model_thien_thoi_bom_line,base.group_user,1,1,1,1
+access_thien_thoi_base_ton_kho,thien_thoi_base.ton_kho,model_thien_thoi_base_ton_kho,base.group_user,1,1,1,1
