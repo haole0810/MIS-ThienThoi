@@ -1,60 +1,115 @@
 <odoo>
   <data>
-    <!-- explicit list view definition -->
-<!--
-    <record model="ir.ui.view" id="quan_ly_xuat.list">
-      <field name="name">quan_ly_xuat list</field>
-      <field name="model">quan_ly_xuat.quan_ly_xuat</field>
+    <record id="view_quan_ly_xuat_phieu_xuat_tree" model="ir.ui.view">
+      <field name="name">quan_ly_xuat.phieu_xuat.tree</field>
+      <field name="model">quan_ly_xuat.phieu_xuat</field>
       <field name="arch" type="xml">
         <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
+          <field name="ma_phieu"/>
+          <field name="ngay_xuat"/>
+          <field name="kho_id"/>
+          <field name="nguoi_xuat_id"/>
+          <field name="trang_thai"/>
         </tree>
       </field>
     </record>
--->
 
-    <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="quan_ly_xuat.action_window">
-      <field name="name">quan_ly_xuat window</field>
-      <field name="res_model">quan_ly_xuat.quan_ly_xuat</field>
-      <field name="view_mode">tree,form</field>
-    </record>
--->
-
-    <!-- server action to the one above -->
-<!--
-    <record model="ir.actions.server" id="quan_ly_xuat.action_server">
-      <field name="name">quan_ly_xuat server</field>
-      <field name="model_id" ref="model_quan_ly_xuat_quan_ly_xuat"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": model._name,
-        }
+    <record id="view_quan_ly_xuat_phieu_xuat_form" model="ir.ui.view">
+      <field name="name">quan_ly_xuat.phieu_xuat.form</field>
+      <field name="model">quan_ly_xuat.phieu_xuat</field>
+      <field name="arch" type="xml">
+        <form string="Phiếu Xuất Kho">
+          <header>
+            <field name="trang_thai" widget="statusbar" statusbar_visible="nhap,xac_nhan,dong_goi,xuat_kho,huy"/>
+            <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight" invisible="trang_thai != 'nhap'"/>
+            <button name="action_pack" string="Đóng gói" type="object" invisible="trang_thai != 'xac_nhan'"/>
+            <button name="action_done" string="Xuất kho" type="object" class="oe_highlight" invisible="trang_thai != 'dong_goi'"/>
+            <button name="action_cancel" string="Hủy" type="object" invisible="trang_thai in ['xuat_kho', 'huy']"/>
+          </header>
+          <sheet>
+            <group>
+              <field name="ma_phieu" readonly="1"/>
+              <field name="ngay_xuat"/>
+              <field name="kho_id"/>
+              <field name="nguoi_xuat_id"/>
+              <field name="tong_so_luong" readonly="1"/>
+            </group>
+            <notebook>
+              <page string="Chi tiết xuất">
+                <field name="chi_tiet_xuat_ids">
+                  <tree editable="bottom">
+                    <field name="san_pham_id"/>
+                    <field name="so_luong"/>
+                    <field name="don_vi_tinh"/>
+                    <field name="ghi_chu"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Thông báo">
+                <field name="thong_bao" nolabel="1"/>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
       </field>
     </record>
--->
 
-    <!-- Top menu item -->
-<!--
-    <menuitem name="quan_ly_xuat" id="quan_ly_xuat.menu_root"/>
--->
-    <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="quan_ly_xuat.menu_1" parent="quan_ly_xuat.menu_root"/>
-    <menuitem name="Menu 2" id="quan_ly_xuat.menu_2" parent="quan_ly_xuat.menu_root"/>
--->
-    <!-- actions -->
-<!--
-    <menuitem name="List" id="quan_ly_xuat.menu_1_list" parent="quan_ly_xuat.menu_1"
-              action="quan_ly_xuat.action_window"/>
-    <menuitem name="Server to list" id="quan_ly_xuat" parent="quan_ly_xuat.menu_2"
-              action="quan_ly_xuat.action_server"/>
--->
+    <record id="action_quan_ly_xuat_phieu_xuat" model="ir.actions.act_window">
+      <field name="name">Phiếu Xuất Kho</field>
+      <field name="res_model">quan_ly_xuat.phieu_xuat</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="view_quan_ly_xuat_phieu_xuat_tree"/>
+    </record>
+
+    <record id="view_quan_ly_xuat_canh_bao_tree" model="ir.ui.view">
+      <field name="name">quan_ly_xuat.canh_bao_nhap.tree</field>
+      <field name="model">quan_ly_xuat.canh_bao_nhap</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="phieu_xuat_id"/>
+          <field name="san_pham_id"/>
+          <field name="kho_id"/>
+          <field name="so_luong_con_lai"/>
+          <field name="muc_toi_thieu"/>
+          <field name="trang_thai"/>
+          <field name="ngay_tao"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_quan_ly_xuat_canh_bao_form" model="ir.ui.view">
+      <field name="name">quan_ly_xuat.canh_bao_nhap.form</field>
+      <field name="model">quan_ly_xuat.canh_bao_nhap</field>
+      <field name="arch" type="xml">
+        <form string="Cảnh báo nhập hàng">
+          <sheet>
+            <group>
+              <field name="phieu_xuat_id"/>
+              <field name="ton_kho_id"/>
+              <field name="san_pham_id" readonly="1"/>
+              <field name="kho_id" readonly="1"/>
+              <field name="so_luong_con_lai" readonly="1"/>
+              <field name="muc_toi_thieu" readonly="1"/>
+              <field name="trang_thai"/>
+              <field name="ngay_tao" readonly="1"/>
+            </group>
+            <group>
+              <field name="ghi_chu"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_quan_ly_xuat_canh_bao" model="ir.actions.act_window">
+      <field name="name">Cảnh báo nhập hàng</field>
+      <field name="res_model">quan_ly_xuat.canh_bao_nhap</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="view_quan_ly_xuat_canh_bao_tree"/>
+    </record>
+
+    <menuitem id="menu_quan_ly_xuat_root" name="Quản lý Xuất Kho" sequence="45"/>
+    <menuitem id="menu_quan_ly_xuat_phieu" name="Phiếu Xuất Kho" parent="menu_quan_ly_xuat_root" action="action_quan_ly_xuat_phieu_xuat" sequence="10"/>
+    <menuitem id="menu_quan_ly_xuat_canh_bao" name="Cảnh báo nhập" parent="menu_quan_ly_xuat_root" action="action_quan_ly_xuat_canh_bao" sequence="20"/>
   </data>
 </odoo>

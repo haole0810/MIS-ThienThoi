@@ -1,0 +1,10 @@
+<odoo>
+  <data noupdate="1">
+    <record id="sequence_phieu_xuat_kho" model="ir.sequence">
+      <field name="name">Phiếu Xuất Kho</field>
+      <field name="code">quan_ly_xuat.phieu.xuat</field>
+      <field name="prefix">XK</field>
+      <field name="padding">4</field>
+    </record>
+  </data>
+</odoo>

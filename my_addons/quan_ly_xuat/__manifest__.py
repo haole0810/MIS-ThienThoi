@@ -1,34 +1,25 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "quan_ly_xuat",
-
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
-
+    'name': "Quản lý Xuất Kho Thiên Thời",
+    'summary': "Quản lý phiếu xuất kho, kiểm tra tồn và cảnh báo nhập hàng khi thiếu",
     'description': """
-Long description of module's purpose
+        Module quản lý xuất kho của Thiên Thời:
+        - Tạo phiếu xuất kho với trạng thái Nháp, Đóng gói, Xuất kho.
+        - Kiểm tra tồn kho trước khi xuất.
+        - Tự động trừ tồn kho và tạo cảnh báo khi tồn kho thấp dưới mức tối thiểu.
     """,
-
-    'author': "My Company",
-    'website': "https://www.yourcompany.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
-    'depends': ['base'],
-
-    # always loaded
+    'author': "Nguyễn Công Phúc",
+    'category': 'Inventory',
+    'version': '1.0',
+    'depends': ['base', 'thien_thoi_base'],
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
+        'data/sequence_data.xml',
         'views/views.xml',
-        'views/templates.xml',
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+    'license': 'LGPL-3',
 }
 
