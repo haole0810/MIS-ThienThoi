@@ -84,6 +84,7 @@
             <field name="context">{'search_default_group_by_kho': 1}</field>
         </record>
 
+
         <menuitem id="menu_thien_thoi_base_root" name="Dữ liệu Nền (Base)"/>
         <menuitem id="menu_san_pham" name="Sản Phẩm" parent="menu_thien_thoi_base_root" action="action_san_pham" sequence="10"/>
         <menuitem id="menu_doi_tac" name="Đối Tác" parent="menu_thien_thoi_base_root" sequence="20"/>
