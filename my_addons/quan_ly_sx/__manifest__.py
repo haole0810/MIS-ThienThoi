@@ -6,6 +6,7 @@
     # THÊM 'mail' VÀO ĐÂY NÈ VIỆT
     'depends': ['base', 'mail', 'thien_thoi_base'], 
     'data': [
+        'security/quan_ly_sx_security.xml',
         'security/ir.model.access.csv',
         'views/production_views.xml',
     ],

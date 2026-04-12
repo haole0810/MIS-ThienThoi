@@ -22,102 +22,76 @@ class PhieuSanXuat(models.Model):
     ], default='cho', string='Trạng thái', tracking=True)
 
     product_id = fields.Many2one('thien_thoi_base.san_pham', string='Thành phẩm', required=True)
-    
-    # 1. PHẦN KẾ HOẠCH
     so_luong = fields.Float(string='Số lượng dự kiến', default=1.0)
-    
-    # 2. PHẦN THỰC TẾ (Nhân viên nhập khi đang làm)
     so_luong_thanh_pham_dat = fields.Float(string='Thành phẩm đạt chuẩn')
     so_luong_nguyen_lieu_dung = fields.Float(string='Nguyên liệu thực tế đã dùng')
-    
-    # 3. TỰ ĐỘNG TÍNH TOÁN
     hao_hut = fields.Float(string='Hao hụt (%)', compute='_compute_hao_hut', store=True)
     nguoi_lam_id = fields.Many2one('res.users', string='Người phụ trách', default=lambda self: self.env.user)
 
     @api.depends('so_luong', 'so_luong_nguyen_lieu_dung', 'loai_phieu')
     def _compute_hao_hut(self):
         for record in self:
-            # Đối với Lựa và Trộn: Hao hụt = (Thực dùng - Dự kiến) / Dự kiến
             if record.loai_phieu in ['lua', 'tron'] and record.so_luong > 0:
                 record.hao_hut = ((record.so_luong_nguyen_lieu_dung - record.so_luong) / record.so_luong) * 100
             else:
                 record.hao_hut = 0
 
-# 1. Hàm Bắt đầu làm: KIỂM TRA TỒN KHO TRONG BẢNG TON_KHO
     def action_start(self):
         for record in self:
             bom = self.env['thien.thoi.bom'].search([('product_id', '=', record.product_id.id)], limit=1)
             if not bom:
-                raise UserError(_("Sản phẩm %s chưa có BOM!") % record.product_id.display_name)
+                raise UserError(f"Sản phẩm {record.product_id.display_name} chưa có BOM!")
             
             for line in bom.line_ids:
                 needed_qty = line.quantity * record.so_luong
-                
-                # TÌM TỒN KHO: Tìm trong bảng thien_thoi_base.ton_kho bản ghi khớp với sản phẩm này
-                inventory = self.env['thien_thoi_base.ton_kho'].search([
-                    ('san_pham_id', '=', line.product_id.id)
-                ], limit=1)
-                
+                inventory = self.env['thien_thoi_base.ton_kho'].search([('san_pham_id', '=', line.product_id.id)], limit=1)
                 if not inventory or inventory.so_luong_hien_tai < needed_qty:
                     con_lai = inventory.so_luong_hien_tai if inventory else 0
-                    raise UserError(_("Không đủ %s! Cần %.2f nma kho chỉ còn %.2f.") % 
-                                    (line.product_id.display_name, needed_qty, con_lai))
+                    raise UserError(f"Không đủ {line.product_id.display_name}! Cần {needed_qty} nhưng chỉ còn {con_lai}.")
             
             record.write({'trang_thai': 'dang_lam'})
 
-    # 2. Hàm Hoàn thành: CẬP NHẬT TRỰC TIẾP VÀO BẢNG TON_KHO
     def action_done(self):
         for record in self:
             if record.trang_thai != 'dang_lam':
-                raise UserError(_("Phiếu phải ở trạng thái 'Đang thực hiện'."))
-
-            bom = self.env['thien.thoi.bom'].search([('product_id', '=', record.product_id.id)], limit=1)
+                raise UserError("Phiếu phải ở trạng thái 'Đang thực hiện' mới có thể hoàn thành.")
             
-            # --- BƯỚC 1: TRỪ KHO NGUYÊN LIỆU ---
+            if record.so_luong_thanh_pham_dat <= 0:
+                raise UserError("Vui lòng nhập số lượng thành phẩm thực tế đạt chuẩn.")
+
+            user = self.env.user
+            # Tự động nhận diện làm thay
+            if record.nguoi_lam_id and record.nguoi_lam_id != user:
+                log_msg = f" {user.name} đã xử lý thay cho {record.nguoi_lam_id.name}."
+            else:
+                log_msg = f" {user.name} đã hoàn thành công việc."
+
+            # Logic trừ kho
+            bom = self.env['thien.thoi.bom'].search([('product_id', '=', record.product_id.id)], limit=1)
             if record.loai_phieu == 'sot':
                 for line in bom.line_ids:
-                    qty_to_minus = line.quantity * record.so_luong
-                    inventory = self.env['thien_thoi_base.ton_kho'].search([
-                        ('san_pham_id', '=', line.product_id.id)
-                    ], limit=1)
-                    if inventory:
-                        inventory.so_luong_hien_tai -= qty_to_minus
+                    inv = self.env['thien_thoi_base.ton_kho'].search([('san_pham_id', '=', line.product_id.id)], limit=1)
+                    if inv: inv.so_luong_hien_tai -= (line.quantity * record.so_luong)
             else:
                 if bom.line_ids:
-                    main_material = bom.line_ids[0].product_id
-                    inventory = self.env['thien_thoi_base.ton_kho'].search([
-                        ('san_pham_id', '=', main_material.id)
-                    ], limit=1)
-                    if inventory:
-                        inventory.so_luong_hien_tai -= record.so_luong_nguyen_lieu_dung
+                    inv = self.env['thien_thoi_base.ton_kho'].search([('san_pham_id', '=', bom.line_ids[0].product_id.id)], limit=1)
+                    if inv: inv.so_luong_hien_tai -= record.so_luong_nguyen_lieu_dung
 
-            # --- BƯỚC 2: CỘNG KHO THÀNH PHẨM ---
-            finished_inv = self.env['thien_thoi_base.ton_kho'].search([
-                ('san_pham_id', '=', record.product_id.id)
-            ], limit=1)
-            
-            if finished_inv:
-                finished_inv.so_luong_hien_tai += record.so_luong_thanh_pham_dat
+            # Cộng kho thành phẩm
+            f_inv = self.env['thien_thoi_base.ton_kho'].search([('san_pham_id', '=', record.product_id.id)], limit=1)
+            if f_inv: 
+                f_inv.so_luong_hien_tai += record.so_luong_thanh_pham_dat
             else:
-                # Nếu thành phẩm chưa bao giờ có trong bảng tồn kho, tạo mới luôn
                 self.env['thien_thoi_base.ton_kho'].create({
-                    'ma_ton_kho': f'INV/{record.product_id.display_name}',
-                    'san_pham_id': record.product_id.id,
-                    'so_luong_hien_tai': record.so_luong_thanh_pham_dat,
-                    'kho_id': 1 # Mặc định kho ID là 1, Việt kiểm tra ID kho thật trong DB nhé
+                    'ma_ton_kho': f'INV/{record.product_id.display_name}', 
+                    'san_pham_id': record.product_id.id, 
+                    'so_luong_hien_tai': record.so_luong_thanh_pham_dat, 
+                    'kho_id': 1
                 })
 
             record.write({'trang_thai': 'xong'})
-
-    def action_admin_process(self):
-        for record in self:
-            # Sếp làm thay thì mặc định thực tế = kế hoạch
-            if not record.so_luong_thanh_pham_dat:
-                record.so_luong_thanh_pham_dat = record.so_luong
-            if not record.so_luong_nguyen_lieu_dung:
-                record.so_luong_nguyen_lieu_dung = record.so_luong
-            record.action_start()
-            record.action_done()
+            # Ghi log chuẩn HTML và không gây lỗi Email
+            record.message_post(body=log_msg, message_type='comment', subtype_xmlid='mail.mt_note')
 
     @api.model
     def create(self, vals):
@@ -125,47 +99,28 @@ class PhieuSanXuat(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code('phieu.san.xuat') or _('New')
         return super(PhieuSanXuat, self).create(vals)
 
-# --- CẤU TRÚC ĐỊNH MỨC (BOM) & QUY TRÌNH ---
-
-# --- CẤU TRÚC ĐỊNH MỨC (BOM) & QUY TRÌNH ĐÃ NÂNG CẤP ---
+# --- CẤU TRÚC ĐỊNH MỨC (BOM) ---
 
 class ThienThoiBOM(models.Model):
     _name = 'thien.thoi.bom'
-    _description = 'Công thức sản xuất Thiên Thời'
+    _description = 'Công thức Thiên Thời'
     _rec_name = 'product_id'
-    # Thêm kế thừa để có khung thảo luận (Chatter) dưới chân trang
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    product_id = fields.Many2one('thien_thoi_base.san_pham', string='Sản phẩm thành phẩm', required=True, tracking=True)
-    line_ids = fields.One2many('thien.thoi.bom.line', 'bom_id', string='Nguyên liệu thành phần')
+    product_id = fields.Many2one('thien_thoi_base.san_pham', string='Thành phẩm', required=True)
+    line_ids = fields.One2many('thien.thoi.bom.line', 'bom_id', string='Nguyên liệu')
     quy_trinh = fields.Html(string='Quy trình hướng dẫn') 
-    
-    # Thêm trạng thái để kiểm soát công thức
-    state = fields.Selection([
-        ('draft', 'Nháp'),
-        ('validated', 'Đã xác nhận')
-    ], string='Trạng thái', default='draft', tracking=True)
+    state = fields.Selection([('draft', 'Nháp'), ('validated', 'Đã xác nhận')], default='draft')
 
-    # Nút bấm Xác nhận
     def action_validate(self):
-        for record in self:
-            if not record.line_ids:
-                raise UserError(_("Không thể xác nhận công thức rỗng! Vui lòng thêm nguyên liệu."))
-            record.state = 'validated'
-            # Ghi log vào khung chat khi xác nhận
-            record.message_post(body=_("Công thức đã được xác nhận và khóa chỉnh sửa."))
+        self.write({'state': 'validated'})
+        self.message_post(body="✅ Công thức đã được xác nhận.", subtype_xmlid='mail.mt_note')
 
-    # Nút bấm Sửa lại (Chỉ dành cho người có quyền quản trị nếu muốn)
     def action_set_to_draft(self):
-        for record in self:
-            record.state = 'draft'
-            record.message_post(body=_("Công thức đã được mở khóa để chỉnh sửa lại."))
+        self.write({'state': 'draft'})
 
 class ThienThoiBOMLine(models.Model):
     _name = 'thien.thoi.bom.line'
-    _description = 'Chi tiết nguyên liệu'
-
     bom_id = fields.Many2one('thien.thoi.bom', ondelete='cascade')
     product_id = fields.Many2one('thien_thoi_base.san_pham', string='Nguyên liệu', required=True)
-    # Số lượng nguyên liệu cần để tạo ra 1 đơn vị thành phẩm
-    quantity = fields.Float(string='Số lượng định mức', required=True, default=1.0)
+    quantity = fields.Float(string='Định mức', default=1.0)

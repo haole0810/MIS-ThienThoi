@@ -3,12 +3,11 @@
         <field name="name">phieu.san.xuat.tree</field>
         <field name="model">phieu.san.xuat</field>
         <field name="arch" type="xml">
-            <tree decoration-info="trang_thai == 'dang_lam'" decoration-success="trang_thai == 'xong'" decoration-danger="hao_hut > 10">
-                <field name="name"/>
-                <field name="product_id"/>
+            <tree decoration-info="trang_thai == 'dang_lam'" decoration-success="trang_thai == 'xong'">
+                <field name="name" string="Mã Phiếu"/>
+                <field name="product_id" string="Thành phẩm"/>
                 <field name="so_luong" string="Dự kiến"/>
-                <field name="so_luong_thanh_pham_dat" string="Thực tế đạt"/>
-                <field name="hao_hut" widget="float" string="Hao hụt (%)" invisible="loai_phieu == 'sot'"/>
+                <field name="so_luong_thanh_pham_dat" string="Thực tế"/>
                 <field name="loai_phieu" string="Bộ phận"/>
                 <field name="trang_thai" widget="badge" decoration-info="trang_thai == 'dang_lam'" decoration-success="trang_thai == 'xong'"/>
             </tree>
@@ -23,7 +22,6 @@
                 <header>
                     <button name="action_start" string="Bắt đầu làm" type="object" class="oe_highlight" invisible="trang_thai != 'cho'"/>
                     <button name="action_done" string="Xác nhận hoàn thành" type="object" class="oe_highlight" invisible="trang_thai != 'dang_lam'"/>
-                    <button name="action_admin_process" string="Sếp xử lý nhanh" type="object" class="btn-danger" groups="base.group_system" invisible="trang_thai == 'xong'"/> 
                     <field name="trang_thai" widget="statusbar" statusbar_visible="cho,dang_lam,xong"/>
                 </header>
                 <sheet>
@@ -32,15 +30,17 @@
                     </div>
                     <group>
                         <group string="Kế hoạch sản xuất">
-                            <field name="product_id" readonly="trang_thai == 'xong'"/>
-                            <field name="so_luong" string="Số lượng cần làm (Kế hoạch)" readonly="trang_thai == 'xong'"/>
-                            <field name="loai_phieu" readonly="trang_thai == 'xong'"/>
+                            <field name="product_id" readonly="trang_thai != 'cho'"/>
+                            <field name="so_luong" string="Số lượng cần làm" readonly="trang_thai != 'cho'"/>
+                            <field name="loai_phieu" readonly="trang_thai != 'cho'"/>
                         </group>
                         <group string="Thực tế thực hiện" invisible="trang_thai == 'cho'">
-                            <field name="so_luong_thanh_pham_dat" required="trang_thai == 'dang_lam'" readonly="trang_thai == 'xong'"/>
-                            <field name="so_luong_nguyen_lieu_dung" string="Nguyên liệu đã dùng (Bánh thô/vụn)"
-                                   invisible="loai_phieu == 'sot'" required="loai_phieu != 'sot' and trang_thai == 'dang_lam'" readonly="trang_thai == 'xong'"/>
-                            <field name="hao_hut" readonly="1" invisible="loai_phieu == 'sot'" decoration-danger="hao_hut > 10"/>
+                            <field name="so_luong_thanh_pham_dat" required="trang_thai == 'dang_lam'" readonly="trang_thai != 'dang_lam'"/>
+                            <field name="so_luong_nguyen_lieu_dung" string="Nguyên liệu đã dùng"
+                                   invisible="loai_phieu == 'sot'" 
+                                   required="loai_phieu != 'sot' and trang_thai == 'dang_lam'" 
+                                   readonly="trang_thai != 'dang_lam'"/>
+                            <field name="hao_hut" readonly="1" invisible="loai_phieu == 'sot'"/>
                         </group>
                     </group>
                     <group>
@@ -49,43 +49,6 @@
                             <field name="ngay_tao"/>
                         </group>
                     </group>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="view_thien_thoi_bom_form" model="ir.ui.view">
-        <field name="name">thien.thoi.bom.form</field>
-        <field name="model">thien.thoi.bom</field>
-        <field name="arch" type="xml">
-            <form>
-                <header>
-                    <button name="action_validate" string="Xác nhận công thức" type="object" class="oe_highlight" invisible="state == 'validated'"/>
-                    <button name="action_set_to_draft" string="Sửa lại" type="object" invisible="state == 'draft'"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,validated"/>
-                </header>
-                <sheet>
-                    <div class="oe_title">
-                        <label for="product_id" string="Công thức cho thành phẩm"/>
-                        <h1><field name="product_id" placeholder="Chọn bánh tráng bơ, sa tế..." readonly="state == 'validated'"/></h1>
-                    </div>
-                    <notebook>
-                        <page string="Thành phần nguyên liệu">
-                            <field name="line_ids" readonly="state == 'validated'">
-                                <tree editable="bottom">
-                                    <field name="product_id" string="Nguyên liệu"/>
-                                    <field name="quantity" string="Định mức (cho 1 đv)"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Quy trình hướng dẫn">
-                            <field name="quy_trinh" widget="html" placeholder="Các bước thực hiện..." readonly="state == 'validated'"/>
-                        </page>
-                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
@@ -95,42 +58,8 @@
         </field>
     </record>
 
-    <record id="view_phieu_san_xuat_graph" model="ir.ui.view">
-        <field name="name">phieu.san.xuat.graph</field>
-        <field name="model">phieu.san.xuat</field>
-        <field name="arch" type="xml">
-            <graph string="Thống kê hao hụt sản xuất" type="bar">
-                <field name="product_id"/>
-                <field name="hao_hut" type="measure"/>
-            </graph>
-        </field>
-    </record>
-
-    <record id="view_thien_thoi_bom_tree" model="ir.ui.view">
-        <field name="name">thien.thoi.bom.tree</field>
-        <field name="model">thien.thoi.bom</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="product_id" string="Sản phẩm"/>
-                <field name="state" widget="badge" decoration-success="state == 'validated'"/>
-            </tree>
-        </field>
-    </record>
-
-    <record id="action_phieu_san_xuat_all" model="ir.actions.act_window">
-        <field name="name">Tất cả Lệnh sản xuất</field>
-        <field name="res_model">phieu.san.xuat</field>
-        <field name="view_mode">tree,form,graph</field>
-    </record>
-
-    <record id="action_thien_thoi_bom" model="ir.actions.act_window">
-        <field name="name">Công thức sản xuất (BOM)</field>
-        <field name="res_model">thien.thoi.bom</field>
-        <field name="view_mode">tree,form</field>
-    </record>
-
     <record id="action_phieu_sot" model="ir.actions.act_window">
-        <field name="name">Chế biến Sốt &amp; Gia vị</field>
+        <field name="name">Chế biến Sốt</field>
         <field name="res_model">phieu.san.xuat</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('loai_phieu', '=', 'sot')]</field>
@@ -150,12 +79,29 @@
         <field name="domain">[('loai_phieu', '=', 'lua')]</field>
     </record>
 
-    <menuitem id="menu_thien_thoi_root" name="Sản xuất Thiên Thời" web_icon="base,static/description/icon.png" action="action_phieu_san_xuat_all"/>
+    <record id="action_phieu_san_xuat_all" model="ir.actions.act_window">
+        <field name="name">Tất cả Lệnh sản xuất</field>
+        <field name="res_model">phieu.san.xuat</field>
+        <field name="view_mode">tree,form,graph</field>
+    </record>
+
+    <record id="action_thien_thoi_bom" model="ir.actions.act_window">
+        <field name="name">Công thức (BOM)</field>
+        <field name="res_model">thien.thoi.bom</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_thien_thoi_root" name="Sản xuất Thiên Thời" action="action_phieu_san_xuat_all"/>
     <menuitem id="menu_phieu_sx_sub" name="Lệnh sản xuất" parent="menu_thien_thoi_root" sequence="10"/>
-    <menuitem id="menu_phieu_sot" name="Chế biến Sốt" parent="menu_phieu_sx_sub" action="action_phieu_sot" sequence="10"/>
-    <menuitem id="menu_phieu_tron" name="Trộn bánh" parent="menu_phieu_sx_sub" action="action_phieu_tron" sequence="20"/>
-    <menuitem id="menu_phieu_lua" name="Lựa bánh" parent="menu_phieu_sx_sub" action="action_phieu_lua" sequence="30"/>
+    
+    <menuitem id="menu_phieu_sot" name="Chế biến Sốt" parent="menu_phieu_sx_sub" action="action_phieu_sot" 
+              groups="quan_ly_sx.group_sx_worker_sot,quan_ly_sx.group_sx_manager" sequence="10"/>
+    <menuitem id="menu_phieu_tron" name="Trộn bánh" parent="menu_phieu_sx_sub" action="action_phieu_tron" 
+              groups="quan_ly_sx.group_sx_worker_tron,quan_ly_sx.group_sx_manager" sequence="20"/>
+    <menuitem id="menu_phieu_lua" name="Lựa bánh" parent="menu_phieu_sx_sub" action="action_phieu_lua" 
+              groups="quan_ly_sx.group_sx_worker_lua,quan_ly_sx.group_sx_manager" sequence="30"/>
 
     <menuitem id="menu_thien_thoi_config" name="Cấu hình" parent="menu_thien_thoi_root" sequence="100"/>
-    <menuitem id="menu_bom_config" name="Công thức (BOM)" parent="menu_thien_thoi_config" action="action_thien_thoi_bom" sequence="10"/>
+    <menuitem id="menu_bom_config" name="Công thức (BOM)" parent="menu_thien_thoi_config" action="action_thien_thoi_bom" 
+              groups="quan_ly_sx.group_sx_manager" sequence="10"/>
 </odoo>

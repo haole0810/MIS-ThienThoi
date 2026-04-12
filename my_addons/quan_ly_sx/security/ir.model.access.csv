@@ -1,5 +1,13 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_phieu_san_xuat,phieu.san.xuat,model_phieu_san_xuat,base.group_user,1,1,1,1
-access_thien_thoi_bom,thien.thoi.bom,model_thien_thoi_bom,base.group_user,1,1,1,1
-access_thien_thoi_bom_line,thien.thoi.bom.line,model_thien_thoi_bom_line,base.group_user,1,1,1,1
-access_thien_thoi_base_ton_kho,thien_thoi_base.ton_kho,model_thien_thoi_base_ton_kho,base.group_user,1,1,1,1
+access_phieu_sx_manager,phieu.san.xuat,model_phieu_san_xuat,quan_ly_sx.group_sx_manager,1,1,1,1
+access_phieu_sx_tron,phieu.san.xuat,model_phieu_san_xuat,quan_ly_sx.group_sx_worker_tron,1,1,0,0
+access_phieu_sx_lua,phieu.san.xuat,model_phieu_san_xuat,quan_ly_sx.group_sx_worker_lua,1,1,0,0
+access_phieu_sx_sot,phieu.san.xuat,model_phieu_san_xuat,quan_ly_sx.group_sx_worker_sot,1,1,0,0
+access_bom_manager,thien.thoi.bom,model_thien_thoi_bom,quan_ly_sx.group_sx_manager,1,1,1,1
+access_bom_line_manager,thien.thoi.bom.line,model_thien_thoi_bom_line,quan_ly_sx.group_sx_manager,1,1,1,1
+access_bom_worker_tron,thien.thoi.bom,model_thien_thoi_bom,quan_ly_sx.group_sx_worker_tron,1,0,0,0
+access_bom_line_worker_tron,thien.thoi.bom.line,model_thien_thoi_bom_line,quan_ly_sx.group_sx_worker_tron,1,0,0,0
+access_bom_worker_lua,thien.thoi.bom,model_thien_thoi_bom,quan_ly_sx.group_sx_worker_lua,1,0,0,0
+access_bom_line_worker_lua,thien.thoi.bom.line,model_thien_thoi_bom_line,quan_ly_sx.group_sx_worker_lua,1,0,0,0
+access_bom_worker_sot,thien.thoi.bom,model_thien_thoi_bom,quan_ly_sx.group_sx_worker_sot,1,0,0,0
+access_bom_line_worker_sot,thien.thoi.bom.line,model_thien_thoi_bom_line,quan_ly_sx.group_sx_worker_sot,1,0,0,0
