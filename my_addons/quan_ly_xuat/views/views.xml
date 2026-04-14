@@ -20,11 +20,8 @@
       <field name="arch" type="xml">
         <form string="Phiếu Xuất Kho">
           <header>
-            <field name="trang_thai" widget="statusbar" statusbar_visible="nhap,xac_nhan,dong_goi,xuat_kho,huy"/>
+            <field name="trang_thai" widget="statusbar" statusbar_visible="nhap,xac_nhan"/>
             <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight" invisible="trang_thai != 'nhap'"/>
-            <button name="action_pack" string="Đóng gói" type="object" invisible="trang_thai != 'xac_nhan'"/>
-            <button name="action_done" string="Xuất kho" type="object" class="oe_highlight" invisible="trang_thai != 'dong_goi'"/>
-            <button name="action_cancel" string="Hủy" type="object" invisible="trang_thai in ['xuat_kho', 'huy']"/>
           </header>
           <sheet>
             <group>
@@ -33,6 +30,7 @@
               <field name="kho_id"/>
               <field name="nguoi_xuat_id"/>
               <field name="tong_so_luong" readonly="1"/>
+              <field name="ly_do_xuat"/>
             </group>
             <notebook>
               <page string="Chi tiết xuất">
@@ -44,9 +42,6 @@
                     <field name="ghi_chu"/>
                   </tree>
                 </field>
-              </page>
-              <page string="Thông báo">
-                <field name="thong_bao" nolabel="1"/>
               </page>
             </notebook>
           </sheet>
@@ -61,55 +56,7 @@
       <field name="view_id" ref="view_quan_ly_xuat_phieu_xuat_tree"/>
     </record>
 
-    <record id="view_quan_ly_xuat_canh_bao_tree" model="ir.ui.view">
-      <field name="name">quan_ly_xuat.canh_bao_nhap.tree</field>
-      <field name="model">quan_ly_xuat.canh_bao_nhap</field>
-      <field name="arch" type="xml">
-        <tree>
-          <field name="phieu_xuat_id"/>
-          <field name="san_pham_id"/>
-          <field name="kho_id"/>
-          <field name="so_luong_con_lai"/>
-          <field name="muc_toi_thieu"/>
-          <field name="trang_thai"/>
-          <field name="ngay_tao"/>
-        </tree>
-      </field>
-    </record>
-
-    <record id="view_quan_ly_xuat_canh_bao_form" model="ir.ui.view">
-      <field name="name">quan_ly_xuat.canh_bao_nhap.form</field>
-      <field name="model">quan_ly_xuat.canh_bao_nhap</field>
-      <field name="arch" type="xml">
-        <form string="Cảnh báo nhập hàng">
-          <sheet>
-            <group>
-              <field name="phieu_xuat_id"/>
-              <field name="ton_kho_id"/>
-              <field name="san_pham_id" readonly="1"/>
-              <field name="kho_id" readonly="1"/>
-              <field name="so_luong_con_lai" readonly="1"/>
-              <field name="muc_toi_thieu" readonly="1"/>
-              <field name="trang_thai"/>
-              <field name="ngay_tao" readonly="1"/>
-            </group>
-            <group>
-              <field name="ghi_chu"/>
-            </group>
-          </sheet>
-        </form>
-      </field>
-    </record>
-
-    <record id="action_quan_ly_xuat_canh_bao" model="ir.actions.act_window">
-      <field name="name">Cảnh báo nhập hàng</field>
-      <field name="res_model">quan_ly_xuat.canh_bao_nhap</field>
-      <field name="view_mode">tree,form</field>
-      <field name="view_id" ref="view_quan_ly_xuat_canh_bao_tree"/>
-    </record>
-
     <menuitem id="menu_quan_ly_xuat_root" name="Quản lý Xuất Kho" sequence="45"/>
     <menuitem id="menu_quan_ly_xuat_phieu" name="Phiếu Xuất Kho" parent="menu_quan_ly_xuat_root" action="action_quan_ly_xuat_phieu_xuat" sequence="10"/>
-    <menuitem id="menu_quan_ly_xuat_canh_bao" name="Cảnh báo nhập" parent="menu_quan_ly_xuat_root" action="action_quan_ly_xuat_canh_bao" sequence="20"/>
   </data>
 </odoo>

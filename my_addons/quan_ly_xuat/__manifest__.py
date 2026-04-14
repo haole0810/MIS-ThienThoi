@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Quản lý Xuất Kho Thiên Thời",
-    'summary': "Quản lý phiếu xuất kho, kiểm tra tồn và cảnh báo nhập hàng khi thiếu",
+    'summary': "Quản lý phiếu xuất kho với quy trình đơn giản",
     'description': """
         Module quản lý xuất kho của Thiên Thời:
-        - Tạo phiếu xuất kho với trạng thái Nháp, Đóng gói, Xuất kho.
-        - Kiểm tra tồn kho trước khi xuất.
-        - Tự động trừ tồn kho và tạo cảnh báo khi tồn kho thấp dưới mức tối thiểu.
+        - Tạo phiếu xuất kho với trạng thái Nháp và Đã xác nhận.
+        - Thêm trường Lý do xuất để ghi chú.
+        - Quy trình đơn giản hóa, loại bỏ cảnh báo nhập hàng.
     """,
     'author': "Nguyễn Công Phúc",
     'category': 'Inventory',
