@@ -8,7 +8,7 @@
                 <field name="product_id" string="Thành phẩm"/>
                 <field name="so_luong" string="Dự kiến"/>
                 <field name="so_luong_thanh_pham_dat" string="Thực tế"/>
-                <field name="loai_phieu" string="Bộ phận"/>
+                <field name="nguoi_lam_ids" widget="many2many_tags" string="Người phụ trách"/>
                 <field name="trang_thai" widget="badge" decoration-info="trang_thai == 'dang_lam'" decoration-success="trang_thai == 'xong'"/>
             </tree>
         </field>
@@ -31,23 +31,26 @@
                     <group>
                         <group string="Kế hoạch sản xuất">
                             <field name="product_id" readonly="trang_thai != 'cho'"/>
-                            <field name="so_luong" string="Số lượng cần làm" readonly="trang_thai != 'cho'"/>
+                            <field name="so_luong" string="Số lượng dự kiến" readonly="trang_thai != 'cho'"/>
                             <field name="loai_phieu" readonly="trang_thai != 'cho'"/>
+                            <field name="nguoi_lam_ids" widget="many2many_tags" readonly="trang_thai != 'cho'"/>
                         </group>
+                        
                         <group string="Thực tế thực hiện" invisible="trang_thai == 'cho'">
-                            <field name="so_luong_thanh_pham_dat" required="trang_thai == 'dang_lam'" readonly="trang_thai != 'dang_lam'"/>
+                            <field name="so_luong_thanh_pham_dat" string="Sản lượng đạt"
+                                   required="trang_thai == 'dang_lam'" 
+                                   readonly="trang_thai == 'xong'"/>
                             <field name="so_luong_nguyen_lieu_dung" string="Nguyên liệu đã dùng"
                                    invisible="loai_phieu == 'sot'" 
                                    required="loai_phieu != 'sot' and trang_thai == 'dang_lam'" 
-                                   readonly="trang_thai != 'dang_lam'"/>
+                                   readonly="trang_thai == 'xong'"/>
                             <field name="hao_hut" readonly="1" invisible="loai_phieu == 'sot'"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Thông tin khác">
-                            <field name="nguoi_lam_id" readonly="trang_thai == 'xong'"/>
-                            <field name="ngay_tao"/>
-                        </group>
+
+                    <group string="Thông tin hoàn thành" invisible="trang_thai != 'xong'">
+                        <field name="log_hoan_thanh" string="Nhóm đã thực hiện"/>
+                        <field name="ngay_tao"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -133,7 +136,7 @@
     <menuitem id="menu_phieu_lua" name="Lựa bánh" parent="menu_phieu_sx_sub" action="action_phieu_lua" 
               groups="quan_ly_sx.group_sx_worker_lua,quan_ly_sx.group_sx_manager" sequence="30"/>
 
-    <menuitem id="menu_thien_thoi_config" name="Cấu hình" parent="menu_thien_thoi_root" sequence="100"/>
+    <menuitem id="menu_thien_thoi_config" name="Công thức Thiên Thời" parent="menu_thien_thoi_root" sequence="100"/>
     <menuitem id="menu_bom_config" name="Công thức (BOM)" parent="menu_thien_thoi_config" action="action_thien_thoi_bom" 
               groups="quan_ly_sx.group_sx_manager" sequence="10"/>
 </odoo>

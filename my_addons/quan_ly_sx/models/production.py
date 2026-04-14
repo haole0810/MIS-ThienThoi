@@ -26,7 +26,11 @@ class PhieuSanXuat(models.Model):
     so_luong_thanh_pham_dat = fields.Float(string='Thành phẩm đạt chuẩn')
     so_luong_nguyen_lieu_dung = fields.Float(string='Nguyên liệu thực tế đã dùng')
     hao_hut = fields.Float(string='Hao hụt (%)', compute='_compute_hao_hut', store=True)
-    nguoi_lam_id = fields.Many2one('res.users', string='Người phụ trách', default=lambda self: self.env.user)
+    
+    # 1. Chuyển sang Many2many để chọn nhiều người
+    nguoi_lam_ids = fields.Many2many('res.users', string='Người phụ trách', default=lambda self: self.env.user)
+    # Field để hiện danh sách người đã làm sau khi hoàn thành
+    log_hoan_thanh = fields.Char(string='Nhóm thực hiện', readonly=True)
 
     @api.depends('so_luong', 'so_luong_nguyen_lieu_dung', 'loai_phieu')
     def _compute_hao_hut(self):
@@ -42,12 +46,22 @@ class PhieuSanXuat(models.Model):
             if not bom:
                 raise UserError(f"Sản phẩm {record.product_id.display_name} chưa có BOM!")
             
+            # Kiểm tra tồn kho trước khi làm
             for line in bom.line_ids:
                 needed_qty = line.quantity * record.so_luong
                 inventory = self.env['thien_thoi_base.ton_kho'].search([('san_pham_id', '=', line.product_id.id)], limit=1)
                 if not inventory or inventory.so_luong_hien_tai < needed_qty:
                     con_lai = inventory.so_luong_hien_tai if inventory else 0
                     raise UserError(f"Không đủ {line.product_id.display_name}! Cần {needed_qty} nhưng chỉ còn {con_lai}.")
+            
+            # 2. Gửi thông báo đến "Cái chuông" cho tất cả người được giao
+            for user in record.nguoi_lam_ids:
+                record.activity_schedule(
+                    'mail.mail_activity_data_todo',
+                    user_id=user.id,
+                    summary=f"Lệnh sản xuất mới: {record.name}",
+                    note=f"Bạn có lệnh sản xuất mới cho {record.product_id.display_name}. Mau vào làm đi Việt ơi!"
+                )
             
             record.write({'trang_thai': 'dang_lam'})
 
@@ -59,14 +73,12 @@ class PhieuSanXuat(models.Model):
             if record.so_luong_thanh_pham_dat <= 0:
                 raise UserError("Vui lòng nhập số lượng thành phẩm thực tế đạt chuẩn.")
 
+            # Lấy danh sách tên người phụ trách để ghi log
+            names = ", ".join(record.nguoi_lam_ids.mapped('name'))
             user = self.env.user
-            # Tự động nhận diện làm thay
-            if record.nguoi_lam_id and record.nguoi_lam_id != user:
-                log_msg = f" {user.name} đã xử lý thay cho {record.nguoi_lam_id.name}."
-            else:
-                log_msg = f" {user.name} đã hoàn thành công việc."
+            log_msg = f"✅ <b>{user.name}</b> đã xác nhận hoàn thành cho nhóm: {names}."
 
-            # Logic trừ kho
+            # Logic trừ kho nguyên liệu và cộng kho thành phẩm (giữ nguyên của Việt)
             bom = self.env['thien.thoi.bom'].search([('product_id', '=', record.product_id.id)], limit=1)
             if record.loai_phieu == 'sot':
                 for line in bom.line_ids:
@@ -77,7 +89,6 @@ class PhieuSanXuat(models.Model):
                     inv = self.env['thien_thoi_base.ton_kho'].search([('san_pham_id', '=', bom.line_ids[0].product_id.id)], limit=1)
                     if inv: inv.so_luong_hien_tai -= record.so_luong_nguyen_lieu_dung
 
-            # Cộng kho thành phẩm
             f_inv = self.env['thien_thoi_base.ton_kho'].search([('san_pham_id', '=', record.product_id.id)], limit=1)
             if f_inv: 
                 f_inv.so_luong_hien_tai += record.so_luong_thanh_pham_dat
@@ -89,8 +100,12 @@ class PhieuSanXuat(models.Model):
                     'kho_id': 1
                 })
 
-            record.write({'trang_thai': 'xong'})
-            # Ghi log chuẩn HTML và không gây lỗi Email
+            # 3. Hoàn tất Activity trên chuông và cập nhật trạng thái
+            record.activity_feedback(['mail.mail_activity_data_todo'])
+            record.write({
+                'trang_thai': 'xong',
+                'log_hoan_thanh': names
+            })
             record.message_post(body=log_msg, message_type='comment', subtype_xmlid='mail.mt_note')
 
     @api.model
@@ -100,7 +115,6 @@ class PhieuSanXuat(models.Model):
         return super(PhieuSanXuat, self).create(vals)
 
 # --- CẤU TRÚC ĐỊNH MỨC (BOM) ---
-
 class ThienThoiBOM(models.Model):
     _name = 'thien.thoi.bom'
     _description = 'Công thức Thiên Thời'
@@ -121,6 +135,7 @@ class ThienThoiBOM(models.Model):
 
 class ThienThoiBOMLine(models.Model):
     _name = 'thien.thoi.bom.line'
+    _description = 'Chi tiết định mức'
     bom_id = fields.Many2one('thien.thoi.bom', ondelete='cascade')
     product_id = fields.Many2one('thien_thoi_base.san_pham', string='Nguyên liệu', required=True)
     quantity = fields.Float(string='Định mức', default=1.0)
