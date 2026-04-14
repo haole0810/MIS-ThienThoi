@@ -29,9 +29,9 @@
             <field name="model">thien_thoi_base.ton_kho</field>
             <field name="arch" type="xml">
                 <tree decoration-danger="so_luong_hien_tai &lt; muc_toi_thieu">
-                    <field name="san_pham_id" string="Mặt hàng" width="45%"/>
-                    <field name="so_luong_hien_tai" string="Tồn thực tế (kg)" width="25%" class="text-end" header_class="text-end"/>
-                    <field name="kho_id" string="Kho" width="30%"/>
+                    <field name="san_pham_id" string="Mặt hàng"/>
+                    <field name="so_luong_hien_tai" string="Tồn thực tế (kg)"/>
+                    <field name="kho_id" string="Kho"/>
                     <field name="muc_toi_thieu" column_invisible="1"/>
                 </tree>
             </field>
