@@ -1,4 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_quan_ly_xuat_phieu_xuat,quan_ly_xuat.phieu_xuat,model_quan_ly_xuat_phieu_xuat,base.group_user,1,1,1,1
 access_quan_ly_xuat_chi_tiet_xuat,quan_ly_xuat.chi_tiet_xuat,model_quan_ly_xuat_chi_tiet_xuat,base.group_user,1,1,1,1
-access_quan_ly_xuat_canh_bao_nhap,quan_ly_xuat.canh_bao_nhap,model_quan_ly_xuat_canh_bao_nhap,base.group_user,1,1,1,1
+

@@ -20,7 +20,7 @@ class PhieuXuatKho(models.Model):
     chi_tiet_xuat_ids = fields.One2many('quan_ly_xuat.chi_tiet_xuat', 'phieu_xuat_id', string='Chi tiết xuất')
     tong_so_luong = fields.Float(string='Tổng số lượng (kg)', compute='_compute_tong_so_luong', store=True)
     ly_do_xuat = fields.Text(string='Lý do xuất')
-
+    
     @api.depends('chi_tiet_xuat_ids.so_luong')
     def _compute_tong_so_luong(self):
         for record in self:

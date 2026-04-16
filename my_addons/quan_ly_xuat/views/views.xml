@@ -26,20 +26,20 @@
           <sheet>
             <group>
               <field name="ma_phieu" readonly="1"/>
-              <field name="ngay_xuat"/>
-              <field name="kho_id"/>
-              <field name="nguoi_xuat_id"/>
+              <field name="ngay_xuat" readonly="trang_thai == 'xac_nhan'"/>
+              <field name="kho_id" readonly="trang_thai == 'xac_nhan'"/>
+              <field name="nguoi_xuat_id" readonly="trang_thai == 'xac_nhan'"/>
               <field name="tong_so_luong" readonly="1"/>
-              <field name="ly_do_xuat"/>
+              <field name="ly_do_xuat" readonly="trang_thai == 'xac_nhan'"/>
             </group>
             <notebook>
               <page string="Chi tiết xuất">
-                <field name="chi_tiet_xuat_ids">
+                <field name="chi_tiet_xuat_ids" readonly="trang_thai == 'xac_nhan'">
                   <tree editable="bottom">
-                    <field name="san_pham_id"/>
-                    <field name="so_luong"/>
+                    <field name="san_pham_id" readonly="parent.trang_thai == 'xac_nhan'"/>
+                    <field name="so_luong" readonly="parent.trang_thai == 'xac_nhan'"/>
                     <field name="don_vi_tinh"/>
-                    <field name="ghi_chu"/>
+                    <field name="ghi_chu" readonly="parent.trang_thai == 'xac_nhan'"/>
                   </tree>
                 </field>
               </page>
