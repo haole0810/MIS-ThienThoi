@@ -84,7 +84,46 @@ class PhieuNhapKho(models.Model):
             
             # Chuyển về trạng thái nháp để có thể sửa (write) hoặc xóa (unlink)
             phieu.trang_thai = 'nhap'
-        
+# Trường ảo để quét mã, không lưu vào DB (store=False)
+    barcode_scan = fields.Char(string="Quét mã vạch sản phẩm", store=False)
+
+    @api.onchange('barcode_scan')
+    def _onchange_barcode_scan(self):
+        if not self.barcode_scan:
+            return
+
+        # Tìm sản phẩm dựa trên ma_sp (được dùng làm barcode)
+        product = self.env['thien_thoi_base.san_pham'].search([
+            ('ma_sp', '=', self.barcode_scan)
+        ], limit=1)
+
+        if product:
+            # Kiểm tra xem sản phẩm này đã có trong danh sách chi tiết chưa
+            exists_line = self.chi_tiet_nhap_ids.filtered(lambda l: l.san_pham_id.id == product.id)
+            
+            if exists_line:
+                # Nếu đã có, tự động tăng số lượng lên 1
+                exists_line[0].so_luong_nhap += 1
+            else:
+                # Nếu chưa có, tạo dòng mới
+                new_line = self.env['quan_ly_nhap.chi_tiet_nhap'].new({
+                    'phieu_nhap_id': self._origin.id,
+                    'san_pham_id': product.id,
+                    'so_luong_nhap': 1.0,
+                    'don_gia': 0.0, # Hoặc lấy gia_ban từ product làm mặc định
+                })
+                self.chi_tiet_nhap_ids += new_line
+            
+            # Xóa nội dung ô quét để chờ lần quét tiếp theo
+            self.barcode_scan = False
+        else:
+            # Nếu không tìm thấy sản phẩm
+            barcode_wrong = self.barcode_scan
+            self.barcode_scan = False
+            return {'warning': {
+                'title': 'Không tìm thấy',
+                'message': f'Sản phẩm có mã "{barcode_wrong}" không tồn tại trong hệ thống.'
+            }}       
 
 class ChiTietNhap(models.Model):
     _name = 'quan_ly_nhap.chi_tiet_nhap'

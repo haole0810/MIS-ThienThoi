@@ -53,6 +53,27 @@
 </form>
     </field>
 </record>
+<record id="view_phieu_nhap_form_inherit_barcode" model="ir.ui.view">
+    <field name="name">quan_ly_nhap.phieu_nhap.form.inherit.barcode</field>
+    <field name="model">quan_ly_nhap.phieu_nhap</field>
+    <field name="inherit_id" ref="quan_ly_nhap.view_phieu_nhap_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//sheet/group" position="before">
+            <div class="oe_edit_only" style="padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 10px;" invisible="trang_thai == 'da_xac_nhan'">
+                <label for="barcode_scan" style="font-weight: bold; color: #008784;"/>
+                <field name="barcode_scan" placeholder="Bắn máy quét mã vạch vào đây..." 
+                       style="font-size: 1.2em; border-bottom: 2px solid #008784 !important;"/>
+                <p class="text-muted" style="font-size: 0.9em; margin-top: 5px;">
+                    * Lưu ý: Hệ thống sẽ lấy Mã sản phẩm (ma_sp) làm mã vạch để nhận diện.
+                </p>
+            </div>
+        </xpath>
+        
+        <xpath expr="//field[@name='chi_tiet_nhap_ids']/tree" position="attributes">
+            <attribute name="editable">bottom</attribute>
+        </xpath>
+    </field>
+</record>
 
         <record id="action_phieu_nhap" model="ir.actions.act_window">
             <field name="name">Phiếu Nhập Kho</field>
