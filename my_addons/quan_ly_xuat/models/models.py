@@ -32,6 +32,23 @@ class PhieuXuatKho(models.Model):
                 raise UserError('Vui lòng thêm ít nhất một dòng sản phẩm trước khi xác nhận.')
             if record.ma_phieu == 'Mới':
                 record.ma_phieu = self.env['ir.sequence'].next_by_code('quan_ly_xuat.phieu.xuat') or 'XK0001'
+            
+            # Kiểm tra và cập nhật tồn kho
+            for line in record.chi_tiet_xuat_ids:
+                ton_kho = self.env['thien_thoi_base.ton_kho'].search([
+                    ('san_pham_id', '=', line.san_pham_id.id),
+                    ('kho_id', '=', record.kho_id.id)
+                ], limit=1)
+                if not ton_kho or ton_kho.so_luong_hien_tai < line.so_luong:
+                    raise UserError(
+                        f'Sản phẩm {line.san_pham_id.ten_sp} không đủ tồn kho để xuất. '
+                        f'Hiện có {ton_kho.so_luong_hien_tai if ton_kho else 0.0} kg.'
+                    )
+                
+                # Trừ tồn kho
+                ton_kho.so_luong_hien_tai -= line.so_luong
+                ton_kho.ngay_cap_nhat = fields.Date.context_today(self)
+            
             record.trang_thai = 'xac_nhan'
 
 
