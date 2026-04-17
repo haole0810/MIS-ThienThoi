@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         TREE VIEW – danh sách đơn hàng
+    ══════════════════════════════════════════════════════════════════════════ -->
+    <record id="view_don_hang_tree" model="ir.ui.view">
+      <field name="name">don_hang_banh_trang.don_hang.tree</field>
+      <field name="model">don_hang_banh_trang.don_hang</field>
+      <field name="arch" type="xml">
+        <tree string="Đơn Hàng" decoration-success="trang_thai == 'xuat_kho'"
+                                decoration-warning="trang_thai == 'dong_goi'"
+                                decoration-muted="trang_thai == 'huy'"
+                                decoration-info="trang_thai == 'xac_nhan'">
+          <field name="ma_don_hang"/>
+          <field name="ngay_tao"/>
+          <field name="ten_khach_hang"/>
+          <field name="loai_khach_hang"/>
+          <field name="kho_id"/>
+          <field name="nguoi_xuat_id"/>
+          <field name="tong_so_luong"/>
+          <field name="tong_tien" widget="monetary" options="{'currency_field': False}"/>
+          <field name="trang_thai" widget="badge"
+                 decoration-success="trang_thai == 'xuat_kho'"
+                 decoration-warning="trang_thai == 'dong_goi'"
+                 decoration-danger="trang_thai == 'huy'"
+                 decoration-info="trang_thai == 'xac_nhan'"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         FORM VIEW – chi tiết đơn hàng
+    ══════════════════════════════════════════════════════════════════════════ -->
+    <record id="view_don_hang_form" model="ir.ui.view">
+      <field name="name">don_hang_banh_trang.don_hang.form</field>
+      <field name="model">don_hang_banh_trang.don_hang</field>
+      <field name="arch" type="xml">
+        <form string="Đơn Hàng Bánh Tráng">
+
+          <!-- ── Thanh trạng thái ────────────────────────────────────────── -->
+          <header>
+            <field name="trang_thai" widget="statusbar"
+                   statusbar_visible="xac_nhan,dong_goi,xuat_kho"/>
+
+            <!-- Nút Đóng gói: chỉ hiện ở bước Xác nhận -->
+            <button name="action_dong_goi"
+                    string="Đóng gói"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="trang_thai != 'xac_nhan'"/>
+
+            <!-- Nút Xuất kho: chỉ hiện ở bước Đóng gói -->
+            <button name="action_xuat_kho"
+                    string="Xuất kho"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="trang_thai != 'dong_goi'"/>
+
+            <!-- Nút Về Xác nhận: cho phép quay lại từ Đóng gói -->
+            <button name="action_ve_xac_nhan"
+                    string="← Về Xác nhận"
+                    type="object"
+                    invisible="trang_thai != 'dong_goi'"/>
+
+            <!-- Nút Xem Phiếu Xuất: hiện khi đã xuất kho -->
+            <button name="action_xem_phieu_xuat"
+                    string="📋 Xem Phiếu Xuất Kho"
+                    type="object"
+                    invisible="trang_thai != 'xuat_kho'"/>
+
+            <!-- Nút Hủy: không xuất hiện khi đã xuất kho hoặc đã hủy -->
+            <button name="action_huy"
+                    string="Hủy đơn"
+                    type="object"
+                    class="btn-danger"
+                    confirm="Bạn có chắc chắn muốn hủy đơn hàng này không?"
+                    invisible="trang_thai in ('xuat_kho', 'huy')"/>
+          </header>
+
+          <!-- ── Nội dung form ───────────────────────────────────────────── -->
+          <sheet>
+
+            <!-- Banner trạng thái hủy -->
+            <div class="alert alert-danger" role="alert"
+                 invisible="trang_thai != 'huy'">
+              <strong>⚠ Đơn hàng này đã bị HỦY.</strong>
+            </div>
+
+            <!-- Banner đã xuất kho -->
+            <div class="alert alert-success" role="alert"
+                 invisible="trang_thai != 'xuat_kho'">
+              <strong>✅ Đơn hàng đã xuất kho thành công!</strong>
+              Phiếu xuất kho:
+              <field name="phieu_xuat_id" readonly="1" nolabel="1"/>
+            </div>
+
+            <!-- Tiêu đề lớn -->
+            <div class="oe_title">
+              <h1>
+                <field name="ma_don_hang" readonly="1"/>
+              </h1>
+            </div>
+
+            <!-- Thông tin chính -->
+            <group>
+              <group string="Thông tin khách hàng">
+                <field name="ten_khach_hang"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"
+                       required="1"/>
+                <field name="loai_khach_hang"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"/>
+                <field name="ngay_tao"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"/>
+              </group>
+              <group string="Thông tin xuất kho">
+                <field name="kho_id"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"/>
+                <field name="nguoi_xuat_id"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"/>
+                <field name="ly_do_xuat"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"/>
+              </group>
+            </group>
+
+            <!-- Bảng sản phẩm -->
+            <notebook>
+              <page string="🛒 Chi tiết sản phẩm">
+                <field name="chi_tiet_ids" readonly="trang_thai in ('dong_goi','xuat_kho','huy')">
+                  <tree editable="bottom" string="Chi tiết đơn hàng">
+                      <field name="san_pham_id" on_change="1"/>
+                      <field name="don_vi_tinh" optional="show"/>
+                      <field name="so_luong"/>
+                      <field name="don_gia" force_save="1"/> 
+                      <field name="thanh_tien" readonly="1"/>
+                      <field name="ghi_chu" optional="show"/>
+                  </tree>
+              </field>
+
+                <!-- Tổng hợp cuối bảng -->
+                <group class="oe_subtotal_footer oe_right">
+                  <field name="tong_so_luong" readonly="1"/>
+                  <field name="tong_tien" readonly="1"
+                         widget="monetary"
+                         options="{'currency_field': False}"/>
+                </group>
+              </page>
+
+              <page string="📝 Ghi chú">
+                <field name="ghi_chu"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"
+                       placeholder="Ghi chú thêm về đơn hàng..."/>
+              </page>
+            </notebook>
+          </sheet>
+
+          <!-- Chatter -->
+          <div class="oe_chatter">
+            <field name="message_follower_ids"/>
+            <field name="activity_ids"/>
+            <field name="message_ids"/>
+          </div>
+
+        </form>
+      </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         SEARCH VIEW
+    ══════════════════════════════════════════════════════════════════════════ -->
+    <record id="view_don_hang_search" model="ir.ui.view">
+      <field name="name">don_hang_banh_trang.don_hang.search</field>
+      <field name="model">don_hang_banh_trang.don_hang</field>
+      <field name="arch" type="xml">
+        <search string="Tìm kiếm đơn hàng">
+          <field name="ma_don_hang" string="Mã đơn hàng"/>
+          <field name="ten_khach_hang" string="Tên khách hàng"/>
+          <field name="kho_id" string="Kho xuất"/>
+          <field name="nguoi_xuat_id" string="Người xuất"/>
+
+          <!-- Bộ lọc nhanh -->
+          <filter string="Chờ xác nhận" name="filter_xac_nhan"
+                  domain="[('trang_thai','=','xac_nhan')]"/>
+          <filter string="Đang đóng gói" name="filter_dong_goi"
+                  domain="[('trang_thai','=','dong_goi')]"/>
+          <filter string="Đã xuất kho" name="filter_xuat_kho"
+                  domain="[('trang_thai','=','xuat_kho')]"/>
+          <filter string="Đã hủy" name="filter_huy"
+                  domain="[('trang_thai','=','huy')]"/>
+          <separator/>
+          <filter string="Khách sỉ" name="filter_khach_si"
+                  domain="[('loai_khach_hang','=','si')]"/>
+          <filter string="Khách lẻ" name="filter_khach_le"
+                  domain="[('loai_khach_hang','=','le')]"/>
+          <separator/>
+          <filter string="Hôm nay" name="filter_today"
+                  domain="[('ngay_tao','=', context_today().strftime('%Y-%m-%d'))]"/>
+
+          <!-- Nhóm theo -->
+          <group expand="0" string="Nhóm theo">
+            <filter string="Trạng thái" name="group_trang_thai"
+                    context="{'group_by': 'trang_thai'}"/>
+            <filter string="Loại khách hàng" name="group_loai_khach"
+                    context="{'group_by': 'loai_khach_hang'}"/>
+            <filter string="Kho xuất" name="group_kho"
+                    context="{'group_by': 'kho_id'}"/>
+            <filter string="Ngày tạo" name="group_ngay"
+                    context="{'group_by': 'ngay_tao:month'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         ACTION
+    ══════════════════════════════════════════════════════════════════════════ -->
+    <record id="action_don_hang" model="ir.actions.act_window">
+      <field name="name">Đơn Hàng</field>
+      <field name="res_model">don_hang_banh_trang.don_hang</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_don_hang_search"/>
+      <field name="context">{'search_default_filter_xac_nhan': 0}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Tạo đơn hàng mới!
+        </p>
+        <p>
+          Nhấn <b>Tạo mới</b> để bắt đầu một đơn hàng bánh tráng.
+        </p>
+      </field>
+    </record>
+
+    <!-- Action lọc riêng từng bước (dùng cho shortcut menu nếu cần) -->
+    <record id="action_don_hang_dong_goi" model="ir.actions.act_window">
+      <field name="name">Đơn Hàng – Đóng Gói</field>
+      <field name="res_model">don_hang_banh_trang.don_hang</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('trang_thai','=','dong_goi')]</field>
+      <field name="search_view_id" ref="view_don_hang_search"/>
+    </record>
+
+    <record id="action_don_hang_xuat_kho" model="ir.actions.act_window">
+      <field name="name">Đơn Hàng – Đã Xuất Kho</field>
+      <field name="res_model">don_hang_banh_trang.don_hang</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('trang_thai','=','xuat_kho')]</field>
+      <field name="search_view_id" ref="view_don_hang_search"/>
+    </record>
+
+  </data>
+</odoo>

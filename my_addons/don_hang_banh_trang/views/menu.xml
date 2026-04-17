@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Root menu -->
+    <menuitem id="menu_don_hang_root"
+              name="Đơn Hàng Bánh Tráng"
+              sequence="40"
+              web_icon="don_hang_banh_trang,static/description/icon.png"/>
+
+    <!-- Tất cả đơn hàng -->
+    <menuitem id="menu_don_hang_all"
+              name="Tất cả đơn hàng"
+              parent="menu_don_hang_root"
+              action="action_don_hang"
+              sequence="10"/>
+
+    <!-- Đang đóng gói -->
+    <menuitem id="menu_don_hang_dong_goi"
+              name="Đang đóng gói"
+              parent="menu_don_hang_root"
+              action="action_don_hang_dong_goi"
+              sequence="20"/>
+
+    <!-- Đã xuất kho -->
+    <menuitem id="menu_don_hang_xuat_kho"
+              name="Đã xuất kho"
+              parent="menu_don_hang_root"
+              action="action_don_hang_xuat_kho"
+              sequence="30"/>
+
+  </data>
+</odoo>

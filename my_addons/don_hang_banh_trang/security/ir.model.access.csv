@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_don_hang_user,don_hang_banh_trang.don_hang user,model_don_hang_banh_trang_don_hang,base.group_user,1,1,1,0
+access_don_hang_manager,don_hang_banh_trang.don_hang manager,model_don_hang_banh_trang_don_hang,base.group_system,1,1,1,1
+access_chi_tiet_don_hang_user,don_hang_banh_trang.chi_tiet_don_hang user,model_don_hang_banh_trang_chi_tiet_don_hang,base.group_user,1,1,1,0
+access_chi_tiet_don_hang_manager,don_hang_banh_trang.chi_tiet_don_hang manager,model_don_hang_banh_trang_chi_tiet_don_hang,base.group_system,1,1,1,1
