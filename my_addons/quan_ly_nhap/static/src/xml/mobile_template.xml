@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="quan_ly_nhap.MobileScan">
+        <div class="o_mobile_scanner" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column;">
+            <div class="scanner-header" style="padding: 15px; color: white; text-align: center; background: rgba(0,0,0,0.8); z-index: 10;">
+                <h4>Máy Quét Thiên Thời</h4>
+                <p>Quét liên tục, bấm Đóng khi hoàn tất</p>
+            </div>
+            
+            <div class="scanner-body" style="flex-grow: 1; position: relative; overflow: hidden;">
+                <video t-ref="video" 
+                       id="video" 
+                       autoplay="true" 
+                       playsinline="true" 
+                       style="width: 100%; height: 100%; object-fit: cover;">
+                </video>
+            </div>
+
+            <div class="scanner-footer" style="padding: 20px; background: rgba(0,0,0,0.8); z-index: 10;">
+                <button class="btn btn-danger btn-lg w-100" 
+                        t-on-click="onClose" 
+                        style="height: 60px; font-weight: bold;">
+                    ĐÓNG CAMERA &amp; CẬP NHẬT PHIẾU
+                </button>
+            </div>
+        </div>
+    </t>
+</templates>

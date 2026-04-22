@@ -1,5 +1,69 @@
 <odoo>
     <data>
+        <record id="view_in_tem_wizard_form" model="ir.ui.view">
+            <field name="name">quan_ly_nhap.in_tem_wizard.form</field>
+            <field name="model">quan_ly_nhap.in_tem_wizard</field>
+            <field name="arch" type="xml">
+                <form string="Cấu hình in tem">
+                    <sheet>
+                        <group>
+                            <field name="product_id"/>
+                            <group>
+                                <field name="qty_total"/>
+                                <field name="so_luong_tem"/>
+                                <field name="khoi_luong_moi_tem"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirm_print" string="In Tem Ngay" type="object" class="btn-primary"/>
+                        <button string="Hủy" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <record id="action_report_in_tem_dinh_danh" model="ir.actions.report">
+            <field name="name">In Tem Định Danh</field>
+            <field name="model">quan_ly_nhap.in_tem_wizard</field>
+            
+            <field name="report_type">qweb-html</field> 
+            
+            <field name="report_name">quan_ly_nhap.report_tem_template</field>
+            <field name="report_file">quan_ly_nhap.report_tem_template</field>
+            <field name="binding_model_id" eval="False"/>
+        </record>
+
+        <template id="report_tem_template">
+            <t t-call="web.basic_layout">
+                <div class="page">
+            <t t-foreach="docs" t-as="o">
+                <t t-foreach="range(int(o.so_luong_tem))" t-as="i">
+                    <div style="width: 50mm; height: 30mm; border: 3px solid black; padding: 5px; margin-bottom: 15px; page-break-inside: avoid; background: white; display: flex; flex-direction: column; justify-content: space-around;">
+                        
+                        <div style="font-weight: bold; font-size: 16px; text-align: center; color: black; line-height: 1.2; text-transform: uppercase;">
+                            <t t-esc="o.product_id.ten_sp"/>
+                        </div>
+
+                        <div style="text-align: center; font-size: 13px; color: black; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 2px 0;">
+                            Mã: <span style="font-weight: bold;"><t t-esc="o.product_id.ma_sp"/></span>
+                        </div>
+                        <div style="text-align: center; font-size: 12px; color: black;">
+                            Ngày nhập: <span style="font-weight: bold;">
+                                <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                            </span>
+                        </div>
+                        <div style="font-weight: bold; text-align: center; color: black; font-size: 15px;">
+                            TRỌNG LƯỢNG: <t t-esc="o.khoi_luong_moi_tem"/> KG
+                        </div>
+
+                    </div>
+                        </t>
+                    </t>
+                </div>
+            </t>
+        </template>
+
         <record id="view_phieu_nhap_tree" model="ir.ui.view">
             <field name="name">quan_ly_nhap.phieu_nhap.tree</field>
             <field name="model">quan_ly_nhap.phieu_nhap</field>
@@ -32,7 +96,7 @@
     </header>
     <sheet>
         <group>
-            <field name="ma_phieu" readonly="trang_thai == 'da_xac_nhan'"/>
+            <field name="ma_phieu" readonly="True"/>
             <field name="kho_id" readonly="trang_thai == 'da_xac_nhan'"/>
             <field name="nha_cung_cap_id" readonly="trang_thai == 'da_xac_nhan'"/>
             <field name="ngay_nhap" readonly="trang_thai == 'da_xac_nhan'"/>
@@ -45,6 +109,11 @@
                         <field name="so_luong_nhap"/>
                         <field name="don_gia"/>
                         <field name="chat_luong"/>
+                        <button name="action_open_label_wizard" 
+                                string="In Tem" 
+                                type="object" 
+                                icon="fa-print" 
+                                context="{'default_product_id': san_pham_id, 'default_qty_total': so_luong_nhap}"/>
                     </tree>
                 </field>
             </page>
@@ -59,18 +128,28 @@
     <field name="inherit_id" ref="quan_ly_nhap.view_phieu_nhap_form"/>
     <field name="arch" type="xml">
         <xpath expr="//sheet/group" position="before">
-            <div class="oe_edit_only" style="padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 10px;" invisible="trang_thai == 'da_xac_nhan'">
+            <div class="oe_edit_only" 
+                 style="padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 10px;" 
+                 invisible="trang_thai == 'da_xac_nhan' or not id">
+                
+                <button name="action_scan_barcode_mobile" 
+                        string="📱 Quét Barcode bằng Camera" 
+                        type="object" 
+                        class="btn btn-success btn-lg w-100 mb-3"
+                        style="font-size: 1.1em;"/>
+
                 <label for="barcode_scan" style="font-weight: bold; color: #008784;"/>
                 <field name="barcode_scan" placeholder="Bắn máy quét mã vạch vào đây..." 
                        style="font-size: 1.2em; border-bottom: 2px solid #008784 !important;"/>
-                <p class="text-muted" style="font-size: 0.9em; margin-top: 5px;">
-                    * Lưu ý: Hệ thống sẽ lấy Mã sản phẩm (ma_sp) làm mã vạch để nhận diện.
-                </p>
+            </div>
+            
+            <div class="alert alert-info" role="alert" invisible="id">
+                ✨ <b>Lưu ý:</b> Vui lòng nhập thông tin Kho, Nhà cung cấp và nhấn <b>Lưu</b> để bắt đầu quét mã vạch sản phẩm.
             </div>
         </xpath>
         
-        <xpath expr="//field[@name='chi_tiet_nhap_ids']/tree" position="attributes">
-            <attribute name="editable">bottom</attribute>
+        <xpath expr="//notebook" position="attributes">
+            <attribute name="invisible">not id</attribute>
         </xpath>
     </field>
 </record>

@@ -16,14 +16,22 @@
     'category': 'Inventory',
     'version': '1.0',
 
-    'depends': ['base', 'thien_thoi_base'],
+    'depends': ['base', 'thien_thoi_base','barcodes'],
 
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml'
+        'views/views.xml',
+        'data/ir_sequence_data.xml',
     ],
     
     'installable': True,
     'application': True, 
     'auto_install': False,
+    'assets': {
+    'web.assets_backend': [
+        
+        'quan_ly_nhap/static/src/js/mobile.js',
+        'quan_ly_nhap/static/src/xml/mobile_template.xml',
+    ],
+    },
 }
