@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_voucher_tree" model="ir.ui.view">
+        <field name="name">voucher.voucher.tree</field>
+        <field name="model">voucher.voucher</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="trang_thai == 'dang_chay'" decoration-muted="trang_thai == 'het_han'">
+                <field name="ma_voucher"/>
+                <field name="loai_giam_gia"/>
+                <field name="gia_tri_giam"/>
+                <field name="so_luong_toi_thieu"/>
+                <field name="trang_thai"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_voucher_form" model="ir.ui.view">
+        <field name="name">voucher.voucher.form</field>
+        <field name="model">voucher.voucher</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- Nút Xác nhận chỉ hiển thị khi trạng thái = Nháp -->
+                    <button name="action_confirm" string="Xác nhận" type="object" class="btn-primary" invisible="trang_thai != 'nhap'"/>
+                    <field name="trang_thai" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="ma_voucher" placeholder="" readonly="trang_thai != 'nhap'"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="loai_giam_gia" readonly="trang_thai != 'nhap'"/>
+                            <field name="gia_tri_giam" readonly="trang_thai != 'nhap'"/>
+                            <field name="so_luong_toi_thieu" readonly="trang_thai != 'nhap'"/>
+                        </group>
+                        <group>
+                            <field name="ngay_bat_dau" readonly="trang_thai != 'nhap'"/>
+                            <field name="ngay_ket_thuc" readonly="trang_thai != 'nhap'"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_voucher_voucher" model="ir.actions.act_window">
+        <field name="name">Quản lý Voucher</field>
+        <field name="res_model">voucher.voucher</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_voucher_list" 
+              name="Mã giảm giá" 
+              parent="don_hang_banh_trang.menu_don_hang_root" 
+              action="action_voucher_voucher" 
+              sequence="50"/>
+</odoo>

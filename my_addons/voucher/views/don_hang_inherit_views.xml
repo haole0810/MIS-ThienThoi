@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_don_hang_form_inherit_voucher" model="ir.ui.view">
+        <field name="name">don.hang.form.inherit.voucher</field>
+        <field name="model">don_hang_banh_trang.don_hang</field>
+        <field name="inherit_id" ref="don_hang_banh_trang.view_don_hang_form"/> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='tong_tien']" position="after">
+                
+                <field name="voucher_id" readonly="1" force_save="1" invisible="loai_khach_hang != 'si'"/>
+                
+                <field name="tien_giam_gia" widget="monetary" options="{'currency_field': False}" 
+                       invisible="loai_khach_hang != 'si'"/>
+                
+                <div class="oe_subtotal_footer_separator oe_inline o_td_label" 
+                     invisible="loai_khach_hang != 'si'">
+                    <label for="tong_tien_sau_giam" string="Tổng thanh toán"/>
+                </div>
+                <field name="tong_tien_sau_giam" nolabel="1" class="oe_subtotal_footer_separator" 
+                       widget="monetary" options="{'currency_field': False}" 
+                       invisible="loai_khach_hang != 'si'"/>
+                
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
