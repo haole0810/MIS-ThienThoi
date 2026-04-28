@@ -1,0 +1,25 @@
+<odoo>
+    <record id="view_yeu_cau_nhap_tree" model="ir.ui.view">
+        <field name="name">yeu_cau_nhap_hang.tree</field>
+        <field name="model">yeu_cau_nhap_hang.request</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="trang_thai == 'cho_duyet'" multi_edit="1">
+                <field name="san_pham_id"/>
+                <field name="kho_id"/>
+                <field name="so_luong_hien_tai" widget="remaining_days"/>
+                <field name="muc_toi_thieu"/>
+                <field name="so_luong_can_nhap" sum="Tổng cần nhập"/>
+                <field name="trang_thai" widget="badge" decoration-warning="trang_thai == 'cho_duyet'" decoration-success="trang_thai == 'da_lap_phieu'"/>
+                <button name="action_approve_and_import" string="Duyệt Nhập" type="object" class="oe_highlight" invisible="trang_thai != 'cho_duyet'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_yeu_cau_nhap" model="ir.actions.act_window">
+        <field name="name">Duyệt Yêu Cầu Nhập Hàng</field>
+        <field name="res_model">yeu_cau_nhap_hang.request</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="menu_yeu_cau_nhap_root" name="Duyệt Nhập Hàng" parent="quan_ly_nhap.menu_quan_ly_nhap_root" action="action_yeu_cau_nhap" sequence="5"/>
+</odoo>
