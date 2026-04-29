@@ -2,7 +2,7 @@
 import pytz
 
 from odoo import models, fields, api
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class NhanVien(models.Model):
     _name = 'nhan_su.nhan_vien'
@@ -55,7 +55,7 @@ class ChamCong(models.Model):
         ('ve_som', 'Về sớm'),
         ('vi_pham', 'Trễ/Sớm')
     ], string='Trạng thái', compute='_compute_attendance_data', store=True)
-
+    
     @api.depends('gio_vao', 'gio_ra', 'nhan_vien_id.ca_lam_id')
     def _compute_attendance_data(self):
         # Lấy múi giờ hệ thống hoặc mặc định VN
@@ -91,7 +91,7 @@ class ChamCong(models.Model):
                 # Tính tổng giờ làm
                 diff = rec.gio_ra - rec.gio_vao
                 duration = diff.total_seconds() / 3600.0
-                rec.gio_lam = max(0, duration - ca.gio_nghi_trua)
+                rec.gio_lam = duration
                 rec.so_cong = rec.gio_lam / 8.0
 
             # 4. Cập nhật trạng thái
@@ -101,17 +101,74 @@ class ChamCong(models.Model):
                 rec.trang_thai = 'di_tre'
             elif is_early:
                 rec.trang_thai = 've_som'
-class PhongBan(models.Model):
-    _name = 'nhan_su.phong_ban'
-    _description = 'Phòng ban / Bộ phận'
+    class PhongBan(models.Model):
+        _name = 'nhan_su.phong_ban'
+        _description = 'Phòng ban / Bộ phận'
 
-    name = fields.Char(string='Tên phòng ban', required=True)
-    ma_phong = fields.Char(string='Mã phòng')
-    ghi_chu = fields.Text(string='Ghi chú khu vực')
-class ChucVu(models.Model):
-    _name = 'nhan_su.chuc_vu'
-    _description = 'Chức vụ nhân sự'
+        name = fields.Char(string='Tên phòng ban', required=True)
+        ma_phong = fields.Char(string='Mã phòng')
+        ghi_chu = fields.Text(string='Ghi chú khu vực')
+    class ChucVu(models.Model):
+        _name = 'nhan_su.chuc_vu'
+        _description = 'Chức vụ nhân sự'
 
-    name = fields.Char(string='Tên chức vụ', required=True)
-    ma_chuc_vu = fields.Char(string='Mã chức vụ')
-    ghi_chu = fields.Text(string='Mô tả công việc')
+        name = fields.Char(string='Tên chức vụ', required=True)
+        ma_chuc_vu = fields.Char(string='Mã chức vụ')
+        ghi_chu = fields.Text(string='Mô tả công việc')
+        
+    thoi_gian_tre = fields.Char(string='Đi trễ', compute='_compute_vi_pham_chi_tiet', store=True)
+    thoi_gian_ve_som = fields.Char(string='Về sớm', compute='_compute_vi_pham_chi_tiet', store=True)
+
+    @api.depends('gio_vao', 'gio_ra', 'nhan_vien_id.ca_lam_id')
+    def _compute_vi_pham_chi_tiet(self):
+        for rec in self:
+            # Gán giá trị mặc định
+            rec.thoi_gian_tre = "Đúng giờ"
+            rec.thoi_gian_ve_som = "Đúng giờ"
+            
+            ca = rec.nhan_vien_id.ca_lam_id
+            if not ca:
+                rec.thoi_gian_tre = rec.thoi_gian_ve_som = "Chưa gán ca"
+                continue
+
+            # --- 1. TÍNH TOÁN ĐI TRÊ ---
+            if rec.gio_vao:
+                # Chuyển giờ UTC sang giờ VN (UTC+7)
+                gio_vao_vn = rec.gio_vao + timedelta(hours=7)
+                # Đổi ra tổng số giây trong ngày
+                giay_vao = (gio_vao_vn.hour * 3600) + (gio_vao_vn.minute * 60) + gio_vao_vn.second
+                # Giờ bắt đầu ca (ví dụ 8.0 * 3600 = 28800 giây)
+                giay_bat_dau = int((ca.gio_bat_dau or 0.0) * 3600)
+                
+                if giay_vao > giay_bat_dau:
+                    diff = giay_vao - giay_bat_dau
+                    h = diff // 3600
+                    m = (diff % 3600) // 60
+                    s = diff % 60
+                    # Tạo chuỗi hiển thị
+                    txt = []
+                    if h > 0: txt.append(f"{int(h)}h")
+                    if m > 0: txt.append(f"{int(m)}p")
+                    txt.append(f"{int(s)}s")
+                    rec.thoi_gian_tre = "Trễ " + " ".join(txt)
+
+            # --- 2. TÍNH TOÁN VỀ SỚM ---
+            if rec.gio_ra:
+                # Chuyển giờ UTC sang giờ VN (UTC+7)
+                gio_ra_vn = rec.gio_ra + timedelta(hours=7)
+                # Đổi ra tổng số giây trong ngày
+                giay_ra = (gio_ra_vn.hour * 3600) + (gio_ra_vn.minute * 60) + gio_ra_vn.second
+                # Giờ kết thúc ca
+                giay_ket_thuc = int((ca.gio_ket_thuc or 0.0) * 3600)
+                
+                if giay_ra < giay_ket_thuc:
+                    diff = giay_ket_thuc - giay_ra
+                    h = diff // 3600
+                    m = (diff % 3600) // 60
+                    s = diff % 60
+                    # Tạo chuỗi hiển thị
+                    txt = []
+                    if h > 0: txt.append(f"{int(h)}h")
+                    if m > 0: txt.append(f"{int(m)}p")
+                    txt.append(f"{int(s)}s")
+                    rec.thoi_gian_ve_som = "Sớm " + " ".join(txt)

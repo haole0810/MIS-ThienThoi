@@ -29,46 +29,79 @@
         </field>
     </record>
 
-<record id="view_nhan_vien_form" model="ir.ui.view">
-        <field name="name">nhan_su.nhan_vien.form</field>
-        <field name="model">nhan_su.nhan_vien</field>
-        <field name="arch" type="xml">
-            <form string="Nhân viên">
-                <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="ma_nv" readonly="1"/>
-                        </h1>
-                    </div>
+    <record id="view_nhan_vien_form" model="ir.ui.view">
+    <field name="name">nhan_su.nhan_vien.form</field>
+    <field name="model">nhan_su.nhan_vien</field>
+    <field name="arch" type="xml">
+        <form string="Nhân viên">
+            <sheet>
+                <div class="oe_title">
+                    <h1>
+                        <field name="ma_nv" readonly="1"/>
+                    </h1>
+                </div>
+                <group>
                     <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="phong_ban_id"/>
-                            <field name="chuc_vu_id"/>
-                        </group>
-                        <group>
-                            <field name="phone" widget="phone"/> 
-                            <field name="email" widget="email"/>
-                            <field name="ca_lam_id"/>
-                        </group>
+                        <field name="name"/>
+                        <field name="phong_ban_id"/>
+                        <field name="chuc_vu_id"/>
                     </group>
-                    <notebook>
-                        <page string="Chấm công chi tiết" name="attendance_tab">
-                            <field name="cham_cong_ids" readonly="1">
-                                <tree>
-                                    <field name="ngay"/>
-                                    <field name="gio_vao"/>
-                                    <field name="gio_ra"/>
-                                    <field name="so_cong" sum="Tổng công"/>
-                                    <field name="trang_thai" widget="badge"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-    </record>
+                    <group>
+                        <field name="phone" widget="phone"/> 
+                        <field name="email" widget="email"/>
+                        <field name="ca_lam_id"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Chấm công chi tiết" name="attendance_tab">
+                        <!-- Thêm context để khi mở modal nó rõ ràng hơn -->
+                        <field name="cham_cong_ids" readonly="1">
+                            <!-- Giao diện bảng danh sách (Tree) -->
+                            <tree decoration-danger="trang_thai != 'binh_thuong'">
+                                <field name="ngay"/>
+                                <field name="gio_vao"/>
+                                <field name="thoi_gian_tre"/> <!-- Hiện cột trễ -->
+                                <field name="gio_ra"/>
+                                <field name="thoi_gian_ve_som"/> <!-- Hiện cột sớm -->
+                                <field name="so_cong" sum="Tổng công"/>
+                                <field name="trang_thai" widget="badge" 
+                                       decoration-success="trang_thai == 'binh_thuong'" 
+                                       decoration-danger="trang_thai != 'binh_thuong'"/>
+                            </tree>
+
+                            <!-- ĐÂY LÀ PHẦN HIỆN TRONG MODAL (o_form_view) -->
+                            <form string="Chi tiết ngày công">
+                                <sheet>
+                                    <group>
+                                        <group string="⏰ Giờ giấc">
+                                            <field name="ngay"/>
+                                            <field name="gio_vao"/>
+                                            <field name="gio_ra"/>
+                                        </group>
+                                        <group string="⚠️ Vi phạm">
+                                            <!-- style giúp chữ hiện màu đỏ rực trong modal -->
+                                            <field name="thoi_gian_tre" 
+                                                   style="color: red; font-weight: bold;" 
+                                                   invisible="thoi_gian_tre == 'Đúng giờ'"/>
+                                            <field name="thoi_gian_ve_som" 
+                                                   style="color: red; font-weight: bold;" 
+                                                   invisible="thoi_gian_ve_som == 'Đúng giờ'"/>
+                                            <field name="trang_thai" widget="badge"/>
+                                        </group>
+                                    </group>
+                                    <group string="📊 Kết quả">
+                                        <field name="gio_lam" widget="float_time"/>
+                                        <field name="so_cong"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
 
     <record id="view_cham_cong_tree" model="ir.ui.view">
         <field name="name">nhan_su.cham_cong.tree</field>

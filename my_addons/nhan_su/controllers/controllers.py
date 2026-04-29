@@ -26,8 +26,16 @@ class NhanSuController(http.Controller):
 
         # Chuyển đổi chuỗi thời gian
         try:
-            check_time = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
-            today = check_time.date()
+            from datetime import timedelta # Thêm dòng này ở đầu file hoặc tại đây
+            
+            # Giờ từ máy gửi lên (Giờ VN)
+            check_time_vn = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+            
+            # Ép về giờ UTC để Odoo lưu đúng (VN - 7 tiếng)
+            check_time = check_time_vn - timedelta(hours=7)
+            
+            # Ngày thì vẫn lấy theo giờ VN để tìm bản ghi cho đúng ngày hôm đó
+            today = check_time_vn.date()
         except ValueError:
             return {'status': 'error', 'message': 'Định dạng thời gian sai (Y-m-d H:M:S)'}
 
