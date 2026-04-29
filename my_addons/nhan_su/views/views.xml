@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ca_lam_tree" model="ir.ui.view">
+        <field name="name">nhan_su.ca_lam.tree</field>
+        <field name="model">nhan_su.ca_lam</field>
+        <field name="arch" type="xml">
+            <tree string="Ca làm việc">
+                <field name="name"/>
+                <field name="gio_bat_dau" widget="float_time"/>
+                <field name="gio_ket_thuc" widget="float_time"/>
+            </tree>
+        </field>
+    </record>
+
+<record id="view_nhan_vien_tree" model="ir.ui.view">
+        <field name="name">nhan_su.nhan_vien.tree</field>
+        <field name="model">nhan_su.nhan_vien</field>
+        <field name="arch" type="xml">
+            <tree string="Nhân viên">
+                <field name="ma_nv"/>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="chuc_vu_id"/> 
+                <field name="phong_ban_id"/>
+                <field name="ca_lam_id"/>
+            </tree>
+        </field>
+    </record>
+
+<record id="view_nhan_vien_form" model="ir.ui.view">
+        <field name="name">nhan_su.nhan_vien.form</field>
+        <field name="model">nhan_su.nhan_vien</field>
+        <field name="arch" type="xml">
+            <form string="Nhân viên">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="ma_nv" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="phong_ban_id"/>
+                            <field name="chuc_vu_id"/>
+                        </group>
+                        <group>
+                            <field name="phone" widget="phone"/> 
+                            <field name="email" widget="email"/>
+                            <field name="ca_lam_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chấm công chi tiết" name="attendance_tab">
+                            <field name="cham_cong_ids" readonly="1">
+                                <tree>
+                                    <field name="ngay"/>
+                                    <field name="gio_vao"/>
+                                    <field name="gio_ra"/>
+                                    <field name="so_cong" sum="Tổng công"/>
+                                    <field name="trang_thai" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_cham_cong_tree" model="ir.ui.view">
+        <field name="name">nhan_su.cham_cong.tree</field>
+        <field name="model">nhan_su.cham_cong</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="ngay"/>
+                <field name="nhan_vien_id"/>
+                <field name="gio_vao"/>
+                <field name="gio_ra"/>
+                <field name="gio_lam" widget="float_time"/>
+                <field name="so_cong"/>
+                <field name="trang_thai" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_cham_cong_pivot" model="ir.ui.view">
+        <field name="name">nhan_su.cham_cong.pivot</field>
+        <field name="model">nhan_su.cham_cong</field>
+        <field name="arch" type="xml">
+            <pivot string="Báo cáo tổng công">
+                <field name="nhan_vien_id" type="row"/>
+                <field name="ngay" interval="month" type="col"/>
+                <field name="so_cong" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_nhan_vien" model="ir.actions.act_window">
+        <field name="name">Nhân viên</field>
+        <field name="res_model">nhan_su.nhan_vien</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_cham_cong" model="ir.actions.act_window">
+        <field name="name">Chấm công</field>
+        <field name="res_model">nhan_su.cham_cong</field>
+        <field name="view_mode">tree,pivot,form</field>
+    </record>
+
+    <record id="action_ca_lam" model="ir.actions.act_window">
+        <field name="name">Ca làm việc</field>
+        <field name="res_model">nhan_su.ca_lam</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+<record id="action_phong_ban" model="ir.actions.act_window">
+    <field name="name">Phòng ban / Khu vực</field>
+    <field name="res_model">nhan_su.phong_ban</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<record id="action_chuc_vu" model="ir.actions.act_window">
+    <field name="name">Chức vụ</field>
+    <field name="res_model">nhan_su.chuc_vu</field>
+    <field name="view_mode">tree,form</field>
+</record>
+    <menuitem id="menu_nhan_su_root" name="Quản lý Nhân sự" sequence="10"/>
+    <menuitem id="menu_nhan_vien" name="Nhân viên" parent="menu_nhan_su_root" action="action_nhan_vien" sequence="10"/>
+    <menuitem id="menu_cham_cong" name="Chấm công" parent="menu_nhan_su_root" action="action_cham_cong" sequence="20"/>
+    <menuitem id="menu_cau_hinh_root" name="Cấu hình" parent="menu_nhan_su_root" sequence="100"/>
+      <menuitem id="menu_phong_ban" name="Phòng ban" parent="menu_cau_hinh_root" action="action_phong_ban" sequence="10"/>
+      <menuitem id="menu_chuc_vu" name="Chức vụ" parent="menu_cau_hinh_root" action="action_chuc_vu" sequence="20"/>
+      <menuitem id="menu_ca_lam" name="Ca làm việc" parent="menu_cau_hinh_root" action="action_ca_lam" sequence="30"/>
+</odoo>

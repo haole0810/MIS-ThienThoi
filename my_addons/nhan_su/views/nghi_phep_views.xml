@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- 1. Giao diện danh sách (Tree View) -->
+        <record id="view_nghi_phep_tree" model="ir.ui.view">
+            <field name="name">nhan_su.nghi_phep.tree</field>
+            <field name="model">nhan_su.nghi_phep</field>
+            <field name="arch" type="xml">
+                <!-- Màu sắc cho trạng thái: Validate = Xanh, Refuse = Đỏ -->
+                <tree string="Sổ tay nghỉ phép" decoration-success="state == 'validate'" decoration-danger="state == 'refuse'">
+                    <field name="nhan_vien_id"/>
+                    <field name="ngay_nghi"/>
+                    <field name="loai_nghi"/>
+                    <field name="state" widget="badge" decoration-success="state == 'validate'" decoration-danger="state == 'refuse'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- 2. Giao diện chi tiết (Form View) -->
+        <record id="view_nghi_phep_form" model="ir.ui.view">
+            <field name="name">nhan_su.nghi_phep.form</field>
+            <field name="model">nhan_su.nghi_phep</field>
+            <field name="arch" type="xml">
+                <form string="Phiếu xác nhận nghỉ">
+                    <header>
+                        <!-- Admin bấm Duyệt hoặc Từ chối ngay khi ở trạng thái Draft -->
+                        <button name="action_validate" string="Duyệt nghỉ" type="object" invisible="state != 'draft'" class="oe_highlight"/>
+                        <button name="action_refuse" string="Từ chối" type="object" invisible="state != 'draft'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,validate,refuse"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>Ghi chú nghỉ phép</h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="nhan_vien_id" options="{'no_create': True}"/>
+                                <field name="ngay_nghi"/>
+                            </group>
+                            <group>
+                                <field name="loai_nghi"/>
+                            </group>
+                        </group>
+                        <group string="Ghi chú của Quản lý">
+                            <field name="ly_do" nolabel="1" placeholder="Nhập lý do nghỉ hoặc ghi chú tại đây..."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- 3. Hành động (Action) -->
+        <record id="action_nghi_phep" model="ir.actions.act_window">
+            <field name="name">Quản lý nghỉ phép</field>
+            <field name="res_model">nhan_su.nghi_phep</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- 4. Menu -->
+        <menuitem id="menu_nghi_phep" 
+                  name="Nghỉ phép" 
+                  parent="nhan_su.menu_nhan_su_root" 
+                  action="action_nghi_phep" 
+                  sequence="20"/>
+    </data>
+</odoo>
