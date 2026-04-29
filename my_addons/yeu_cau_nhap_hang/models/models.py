@@ -22,9 +22,9 @@ class YeuCauNhapHang(models.Model):
     @api.model
     def cron_check_low_stock(self):
         # Tìm các bản ghi tồn kho bên module base có số lượng < mức tối thiểu
-        low_stock_items = self.env['thien_thoi_base.ton_kho'].search([
-            ('so_luong_hien_tai', '<', 'muc_toi_thieu')
-        ])
+        # Cách viết ĐÚNG
+        all_stock = self.env['thien_thoi_base.ton_kho'].search([])
+        low_stock_items = all_stock.filtered(lambda x: x.so_luong < x.muc_toi_thieu)
         for item in low_stock_items:
             # Kiểm tra xem đã có yêu cầu Chờ duyệt nào cho sản phẩm này tại kho này chưa
             exists = self.search([
