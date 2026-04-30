@@ -55,18 +55,18 @@
                 <notebook>
                     <page string="Chấm công chi tiết" name="attendance_tab">
                         <!-- Thêm context để khi mở modal nó rõ ràng hơn -->
-                        <field name="cham_cong_ids" readonly="1">
+                        <field name="cham_cong_ids" context="{'default_nhan_vien_id': active_id}">
                             <!-- Giao diện bảng danh sách (Tree) -->
                             <tree decoration-danger="trang_thai != 'binh_thuong'">
                                 <field name="ngay"/>
                                 <field name="gio_vao"/>
-                                <field name="thoi_gian_tre"/> <!-- Hiện cột trễ -->
+                                <field name="thoi_gian_tre" readonly="1"/> <!-- Hiện cột trễ -->
                                 <field name="gio_ra"/>
-                                <field name="thoi_gian_ve_som"/> <!-- Hiện cột sớm -->
-                                <field name="so_cong" sum="Tổng công"/>
+                                <field name="thoi_gian_ve_som" readonly="1"/> <!-- Hiện cột sớm -->
+                                <field name="so_cong" sum="Tổng công" readonly="1"/>
                                 <field name="trang_thai" widget="badge" 
                                        decoration-success="trang_thai == 'binh_thuong'" 
-                                       decoration-danger="trang_thai != 'binh_thuong'"/>
+                                       decoration-danger="trang_thai != 'binh_thuong'" readonly="1"/>
                             </tree>
 
                             <!-- ĐÂY LÀ PHẦN HIỆN TRONG MODAL (o_form_view) -->

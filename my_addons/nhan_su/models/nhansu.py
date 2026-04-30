@@ -45,7 +45,6 @@ class ChamCong(models.Model):
     ngay = fields.Date(string='Ngày', default=fields.Date.context_today)
     gio_vao = fields.Datetime(string='Giờ vào')
     gio_ra = fields.Datetime(string='Giờ ra')
-    
     # Các trường tính toán
     gio_lam = fields.Float(string='Giờ làm thực tế', compute='_compute_attendance_data', store=True)
     so_cong = fields.Float(string='Số công', compute='_compute_attendance_data', store=True)
@@ -115,7 +114,7 @@ class ChamCong(models.Model):
         name = fields.Char(string='Tên chức vụ', required=True)
         ma_chuc_vu = fields.Char(string='Mã chức vụ')
         ghi_chu = fields.Text(string='Mô tả công việc')
-        
+
     thoi_gian_tre = fields.Char(string='Đi trễ', compute='_compute_vi_pham_chi_tiet', store=True)
     thoi_gian_ve_som = fields.Char(string='Về sớm', compute='_compute_vi_pham_chi_tiet', store=True)
 
