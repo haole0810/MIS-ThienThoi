@@ -1,0 +1,79 @@
+<odoo>
+    <data>
+        <!-- 1. Giao diện Danh sách (Tree View) -->
+        <record id="view_yeu_cau_nhap_hang_tree" model="ir.ui.view">
+            <field name="name">quan_ly_mua_hang.yeu_cau.tree</field>
+            <field name="model">quan_ly_mua_hang.yeu_cau</field>
+            <field name="arch" type="xml">
+                <!-- Dùng màu sắc để phân biệt trạng thái -->
+                <tree decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'done'">
+                    <field name="ma_yeu_cau"/>
+                    <field name="san_pham_id"/>
+                    <field name="kho_id"/>
+                    <field name="so_luong_hien_tai" string="Tồn thực tế"/>
+                    <field name="muc_toi_thieu" string="Định mức"/>
+                    <field name="so_luong_can_nhap" sum="Tổng cần nhập"/>
+                    <field name="nha_cung_cap_id"/>
+                    <field name="state" widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- 2. Giao diện Chi tiết (Form View) -->
+        <record id="view_yeu_cau_nhap_hang_form" model="ir.ui.view">
+            <field name="name">quan_ly_mua_hang.yeu_cau.form</field>
+            <field name="model">quan_ly_mua_hang.yeu_cau</field>
+            <field name="arch" type="xml">
+                <form string="Yêu cầu nhập hàng">
+                    <header>
+                        <!-- Nút bấm quét hàng thiếu đặt ở đây để tiện sử dụng -->
+                        <button name="action_check_low_stock" string="Quét hàng thiếu" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_send_mail" string="Gửi Email NCC" type="object" invisible="state != 'draft' or not nha_cung_cap_id"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,sent,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="ma_yeu_cau"/></h1>
+                        </div>
+                        <group>
+                            <group string="Thông tin hàng thiếu">
+                                <field name="san_pham_id"/>
+                                <field name="kho_id"/>
+                                <field name="so_luong_hien_tai"/>
+                                <field name="muc_toi_thieu"/>
+                                <field name="so_luong_can_nhap"/>
+                            </group>
+                            <group string="Nhà cung cấp &amp; Liên hệ">
+                                <field name="nha_cung_cap_id" options="{'no_create': True}"/>
+                                <field name="email_ncc"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <!-- Phần Chat và Lịch sử gửi mail -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- 3. Hành động mở cửa sổ (Action) -->
+        <record id="action_yeu_cau_nhap_hang" model="ir.actions.act_window">
+            <field name="name">Sản phẩm cần nhập hàng</field>
+            <field name="res_model">quan_ly_mua_hang.yeu_cau</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Chưa có sản phẩm nào thiếu hụt.
+                </p>
+                <p>Bấm "Quét hàng thiếu" để hệ thống kiểm tra kho Thiên Thời.</p>
+            </field>
+        </record>
+
+        <!-- 4. Menu -->
+        <menuitem id="menu_quan_ly_mua_hang_root" name="Mua Hàng &amp; Cung Ứng" sequence="25"/>
+        <menuitem id="menu_yeu_cau_nhap_hang" name="Sản phẩm thiếu" parent="menu_quan_ly_mua_hang_root" action="action_yeu_cau_nhap_hang" sequence="10"/>
+    </data>
+</odoo>

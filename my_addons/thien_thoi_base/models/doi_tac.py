@@ -18,4 +18,5 @@ class NhaCungCap(models.Model):
     ma_ncc = fields.Char(string="Mã NCC")
     ten_ncc = fields.Char(string="Tên Nhà cung cấp", required=True)
     so_dien_thoai = fields.Char(string="Số điện thoại")
+    email = fields.Char(string="Email")
     dia_chi = fields.Char(string="Địa chỉ")

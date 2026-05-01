@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.purchase</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app string="Cấu hình Mua hàng" name="quan_ly_mua_hang">
+                        <block title="Cấu hình Email" name="email_setting_block">
+                            <setting string="Email gửi đi" help="Nhập Gmail dùng để gửi yêu cầu báo giá">
+                                <field name="purchase_sender_email"/>
+                            </setting>
+                            <setting string="Mật khẩu ứng dụng" help="Mật khẩu ứng dụng 16 ký tự của Google">
+                                <field name="purchase_sender_password" password="True"/>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Thêm Menu để mở phần cấu hình này -->
+        <record id="action_purchase_config_settings" model="ir.actions.act_window">
+            <field name="name">Cấu hình</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'quan_ly_mua_hang'}</field>
+        </record>
+
+        <menuitem id="menu_purchase_config" 
+                  name="Cấu hình" 
+                  parent="menu_quan_ly_mua_hang_root" 
+                  sequence="100"/>
+
+        <menuitem id="menu_purchase_settings" 
+                  name="Thiết lập email" 
+                  parent="menu_purchase_config" 
+                  action="action_purchase_config_settings" 
+                  sequence="1"/>
+    </data>
+</odoo>
