@@ -90,8 +90,8 @@
         </record>
 
         <!-- 5. Menu -->
-        <menuitem id="menu_quan_ly_mua_hang_root" name="Mua Hàng Thiên Thời" sequence="25"/>
+        <menuitem id="menu_quan_ly_mua_hang_root" name="Yêu cầu nhập hàng" sequence="25"/>
         <menuitem id="menu_yeu_cau_nhap_hang" name="Lịch sử yêu cầu" parent="menu_quan_ly_mua_hang_root" action="action_yeu_cau_nhap_hang" sequence="20"/>
-        <menuitem id="menu_thuc_hien_quet_nhanh" name="🔍 Quét hàng thiếu" parent="menu_quan_ly_mua_hang_root" action="action_server_check_low_stock" sequence="10"/>
+        <menuitem id="menu_thuc_hien_quet_nhanh" name="Quét hàng thiếu" parent="menu_quan_ly_mua_hang_root" action="action_server_check_low_stock" sequence="10"/>
     </data>
 </odoo>

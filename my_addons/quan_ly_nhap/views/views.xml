@@ -160,7 +160,7 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem id="menu_quan_ly_nhap_root" name="Nhập Kho (Inbound)"/>
+        <menuitem id="menu_quan_ly_nhap_root" name="Nhập Kho"/>
         <menuitem id="menu_phieu_nhap" name="Phiếu Nhập Kho" parent="menu_quan_ly_nhap_root" action="action_phieu_nhap"/>
 
     </data>

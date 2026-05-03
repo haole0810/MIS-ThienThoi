@@ -56,7 +56,7 @@
       <field name="view_id" ref="view_quan_ly_xuat_phieu_xuat_tree"/>
     </record>
 
-    <menuitem id="menu_quan_ly_xuat_root" name="Quản lý Xuất Kho" sequence="45"/>
+    <menuitem id="menu_quan_ly_xuat_root" name="Xuất Kho" sequence="45"/>
     <menuitem id="menu_quan_ly_xuat_phieu" name="Phiếu Xuất Kho" parent="menu_quan_ly_xuat_root" action="action_quan_ly_xuat_phieu_xuat" sequence="10"/>
   </data>
 </odoo>
