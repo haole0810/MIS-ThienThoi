@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_yeu_cau_nhap,access_yeu_cau_nhap,model_quan_ly_mua_hang_yeu_cau,base.group_user,1,1,1,1
+access_yeu_cau_nhap_line,access_yeu_cau_nhap_line,model_quan_ly_mua_hang_yeu_cau_line,base.group_user,1,1,1,1
