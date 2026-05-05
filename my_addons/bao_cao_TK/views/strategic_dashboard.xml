@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================= SEARCH VIEWS ================= -->
+
+        <!-- Doanh thu -->
+        <record id="view_search_revenue_custom" model="ir.ui.view">
+            <field name="model">don_hang_banh_trang.chi_tiet_don_hang</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="san_pham_id"/>
+                    <filter string="Theo ngày" name="filter_date" date="create_date"/>
+                    <searchpanel>
+                        <field name="san_pham_id" string="Sản phẩm" select="multi" expand="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+        <!-- Sản xuất -->
+        <record id="view_search_production_custom" model="ir.ui.view">
+            <field name="model">phieu.san.xuat</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="product_id"/>
+                    <searchpanel>
+                        <field name="product_id" string="Sản phẩm" select="multi" expand="1"/>
+                        <field name="loai_phieu" string="Công đoạn"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+        <!-- Nhân sự -->
+        <record id="view_search_hr_custom" model="ir.ui.view">
+            <field name="model">nhan_su.cham_cong</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="nhan_vien_id"/>
+                    <searchpanel>
+                        <field name="nhan_vien_id" string="Nhân viên" select="multi" expand="1"/>
+                        <field name="trang_thai" string="Loại lỗi"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+        <!-- Kho -->
+        <record id="view_search_inventory_custom" model="ir.ui.view">
+            <field name="model">thien_thoi_base.ton_kho</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="kho_id"/>
+                    <field name="san_pham_id"/>
+                    <searchpanel>
+                        <field name="kho_id" string="Kho" select="multi" expand="1"/>
+                        <field name="san_pham_id" string="Sản phẩm" select="multi" expand="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+        <!-- ================= GRAPH ================= -->
+
+        <!-- Sản xuất -->
+        <record id="view_production_graph_custom" model="ir.ui.view">
+            <field name="model">phieu.san.xuat</field>
+            <field name="arch" type="xml">
+                <graph string="Sản xuất" type="bar">
+                    <field name="product_id"/>
+                    <field name="nguoi_lam_ids" type="row"/>
+                    <field name="so_luong_thanh_pham_dat" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Nhân sự -->
+        <record id="view_hr_graph_custom" model="ir.ui.view">
+            <field name="model">nhan_su.cham_cong</field>
+            <field name="arch" type="xml">
+                <graph string="Nhân sự" type="bar">
+                    <field name="nhan_vien_id"/>
+                    <field name="so_cong" type="measure"/>
+                    <field name="gio_lam" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Kho -->
+        <record id="view_inventory_graph_custom" model="ir.ui.view">
+            <field name="model">thien_thoi_base.ton_kho</field>
+            <field name="arch" type="xml">
+                <graph string="Kho" type="bar">
+                    <field name="kho_id"/>
+                    <field name="san_pham_id" type="row"/>
+                    <field name="so_luong_hien_tai" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- ================= TRANG 1 ================= -->
+
+        <record id="view_strategic_analysis_control_form" model="ir.ui.view">
+            <field name="model">strategic.analysis</field>
+            <field name="arch" type="xml">
+                <form create="0" delete="0">
+                    <header>
+                        <button name="generate_demo_data" string="Nạp dữ liệu" type="object"/>
+                        <button name="action_run_analysis" string="Chạy phân tích" type="object"/>
+                    </header>
+                    <sheet>
+                        <h1>Bảng Điều Khiển</h1>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="ai_suggestions"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_open_page_1_control" model="ir.actions.act_window">
+            <field name="name">Bảng Điều Khiển</field>
+            <field name="res_model">strategic.analysis</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+
+        <!-- ================= TRANG 2 ================= -->
+
+        <record id="view_strategic_suggestion_tree" model="ir.ui.view">
+            <field name="model">strategic.suggestion</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="type"/>
+                    <field name="trang_thai"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_open_page_2_suggestions" model="ir.actions.act_window">
+            <field name="name">Gợi ý</field>
+            <field name="res_model">strategic.suggestion</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- ================= TRANG 3 ================= -->
+
+        <record id="action_report_revenue" model="ir.actions.act_window">
+            <field name="name">Doanh thu</field>
+            <field name="res_model">don_hang_banh_trang.chi_tiet_don_hang</field>
+            <field name="view_mode">graph,pivot,tree</field>
+            <field name="search_view_id" ref="view_search_revenue_custom"/>
+            <field name="context">
+                {
+                    'group_by': ['san_pham_id'],
+                    'graph_group_by': 'san_pham_id',
+                    'graph_measure': 'thanh_tien'
+                }
+            </field>
+        </record>
+
+        <record id="action_report_production" model="ir.actions.act_window">
+            <field name="name">Sản xuất</field>
+            <field name="res_model">phieu.san.xuat</field>
+            <field name="view_mode">graph,pivot,tree</field>
+            <field name="search_view_id" ref="view_search_production_custom"/>
+            <field name="context">
+                {
+                    'group_by': ['product_id'],
+                    'graph_group_by': 'product_id',
+                    'graph_measure': 'so_luong_thanh_pham_dat'
+                }
+            </field>
+        </record>
+
+        <record id="action_report_hr" model="ir.actions.act_window">
+            <field name="name">Nhân sự</field>
+            <field name="res_model">nhan_su.cham_cong</field>
+            <field name="view_mode">graph,pivot,tree</field>
+            <field name="search_view_id" ref="view_search_hr_custom"/>
+            <field name="context">
+                {
+                    'group_by': ['nhan_vien_id'],
+                    'graph_group_by': 'nhan_vien_id'
+                }
+            </field>
+        </record>
+
+        <record id="action_report_inventory" model="ir.actions.act_window">
+            <field name="name">Kho</field>
+            <field name="res_model">thien_thoi_base.ton_kho</field>
+            <field name="view_mode">graph,pivot,tree</field>
+            <field name="search_view_id" ref="view_search_inventory_custom"/>
+            <field name="context">
+                {
+                    'group_by': ['kho_id'],
+                    'graph_group_by': 'kho_id',
+                    'graph_measure': 'so_luong_hien_tai'
+                }
+            </field>
+        </record>
+
+        <!-- ================= MENU ================= -->
+
+        <menuitem id="menu_root_strategic" name="Dashboard tổng hợp và phân tích dữ liệu"/>
+
+        <menuitem id="menu_page_1" name="1. Bảng Điều Khiển"
+                  parent="menu_root_strategic" action="action_open_page_1_control"/>
+
+        <menuitem id="menu_page_2" name="2. Gợi ý &amp; Phân tích"
+                  parent="menu_root_strategic" action="action_open_page_2_suggestions"/>
+
+        <menuitem id="menu_page_3" name="3. Hệ thống Thống kê"
+                  parent="menu_root_strategic"/>
+
+        <menuitem id="menu_sub_revenue" name="Doanh thu"
+                  parent="menu_page_3" action="action_report_revenue"/>
+
+        <menuitem id="menu_sub_prod" name="Sản xuất"
+                  parent="menu_page_3" action="action_report_production"/>
+
+        <menuitem id="menu_sub_hr" name="Nhân sự"
+                  parent="menu_page_3" action="action_report_hr"/>
+
+        <menuitem id="menu_sub_stock" name="Kho hàng"
+                  parent="menu_page_3" action="action_report_inventory"/>
+
+    </data>
+</odoo>

@@ -121,7 +121,7 @@ class DonHang(models.Model):
                     or 'DH001'
                 )
             rec.trang_thai = 'dong_goi'
-            rec.message_post(body=f'Đơn hàng <b>{rec.ma_don_hang}</b> đã chuyển sang bước <b>Đóng gói</b>.')
+            rec.message_post(body=f'Đơn hàng {rec.ma_don_hang} đã chuyển sang bước Đóng gói.')
 
     def action_xuat_kho(self):
         """
@@ -183,8 +183,7 @@ class DonHang(models.Model):
             rec.trang_thai = 'xuat_kho'
             rec.message_post(
                 body=(
-                    f'Đơn hàng <b>{rec.ma_don_hang}</b> đã <b>Xuất kho</b> thành công. '
-                    f'Phiếu xuất: <b>{phieu_xuat.ma_phieu}</b>.'
+                    f'Đơn hàng {rec.ma_don_hang} đã {phieu_xuat.ma_phieu} thành công. '
                 )
             )
 
@@ -194,7 +193,7 @@ class DonHang(models.Model):
             if rec.trang_thai == 'xuat_kho':
                 raise UserError('Không thể hủy đơn hàng đã xuất kho.')
             rec.trang_thai = 'huy'
-            rec.message_post(body=f'Đơn hàng <b>{rec.ma_don_hang}</b> đã bị <b>Hủy</b>.')
+            rec.message_post(body=f'Đơn hàng {rec.ma_don_hang} đã bị Hủy.')
 
     def action_ve_xac_nhan(self):
         """Đưa đơn về lại Xác nhận (chỉ từ Đóng gói)."""
@@ -244,6 +243,10 @@ class ChiTietDonHang(models.Model):
         store=True,
     )
     ghi_chu = fields.Char(string='Ghi chú')
+    # Thêm các trường related để dùng được trong group_by
+    loai_khach_hang = fields.Selection(related='don_hang_id.loai_khach_hang', string="Loại khách", store=True)
+    ngay_tao_don = fields.Date(related='don_hang_id.ngay_tao', string="Ngày tạo đơn", store=True)
+    nguoi_tao_don = fields.Many2one(related='don_hang_id.create_uid', string="Người tạo đơn", store=True)
     @api.onchange('san_pham_id')
     def _onchange_san_pham_id(self):
         for line in self:

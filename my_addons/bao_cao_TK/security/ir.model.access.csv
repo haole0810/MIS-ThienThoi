@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_strategic_analysis,strategic_analysis,model_strategic_analysis,base.group_user,1,1,1,1
+access_strategic_suggestion,strategic_suggestion,model_strategic_suggestion,base.group_user,1,1,1,1

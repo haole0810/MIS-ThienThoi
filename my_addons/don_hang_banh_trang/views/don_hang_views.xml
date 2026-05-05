@@ -66,7 +66,7 @@
 
             <!-- Nút Xem Phiếu Xuất: hiện khi đã xuất kho -->
             <button name="action_xem_phieu_xuat"
-                    string="📋 Xem Phiếu Xuất Kho"
+                    string="Xem Phiếu Xuất Kho"
                     type="object"
                     invisible="trang_thai != 'xuat_kho'"/>
 
@@ -91,7 +91,7 @@
             <!-- Banner đã xuất kho -->
             <div class="alert alert-success" role="alert"
                  invisible="trang_thai != 'xuat_kho'">
-              <strong>✅ Đơn hàng đã xuất kho thành công!</strong>
+              <strong>Đơn hàng đã xuất kho thành công!</strong>
               Phiếu xuất kho:
               <field name="phieu_xuat_id" readonly="1" nolabel="1"/>
             </div>
@@ -147,7 +147,7 @@
                 </group>
               </page>
 
-              <page string="📝 Ghi chú">
+              <page string="Ghi chú">
                 <field name="ghi_chu"
                        readonly="trang_thai in ('dong_goi','xuat_kho','huy')"
                        placeholder="Ghi chú thêm về đơn hàng..."/>
@@ -226,7 +226,7 @@
           Tạo đơn hàng mới!
         </p>
         <p>
-          Nhấn <b>Tạo mới</b> để bắt đầu một đơn hàng bánh tráng.
+          Nhấn Tạo mới để bắt đầu một đơn hàng bánh tráng.
         </p>
       </field>
     </record>
