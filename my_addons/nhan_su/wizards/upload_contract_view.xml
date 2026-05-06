@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hop_dong_upload_wizard_form" model="ir.ui.view">
+        <field name="name">hop_dong.upload.wizard.form</field>
+        <field name="model">hop_dong.upload.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Upload hợp đồng đã ký">
+                <sheet>
+                    <group>
+                        <field name="hop_dong_id" readonly="1"/>
+                        <field name="file_upload" filename="file_name" widget="binary" 
+                               placeholder="Chọn file (PDF, DOCX, JPG, PNG)"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_upload" string="Xác nhận" type="object" class="btn-primary"/>
+                    <button string="Hủy" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

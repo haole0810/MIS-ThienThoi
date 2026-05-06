@@ -1,0 +1,99 @@
+<odoo>
+    <record id="view_cau_hinh_form" model="ir.ui.view">
+        <field name="name">tinh.luong.cau.hinh.form</field>
+        <field name="model">tinh_luong.cau_hinh</field>
+        <field name="arch" type="xml">
+            <form string="Cấu hình tính lương">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>⚙️ Cấu hình hệ thống tính lương</h1>
+                    </div>
+
+                    <!-- NHÓM 1: Mức lương theo chức vụ -->
+                    <group string="💰 Mức lương theo giờ (VNĐ/giờ)">
+                        <group>
+                            <field name="muc_luong_nhan_vien"
+                                   widget="monetary"
+                                   options="{'currency_field': false}"
+                                   help="Lương giờ chính thức của nhân viên"/>
+                            <field name="muc_luong_quan_ly"
+                                   widget="monetary"
+                                   options="{'currency_field': false}"
+                                   help="Lương giờ chính thức của quản lý"/>
+                        </group>
+                    </group>
+
+                    <!-- NHÓM 2: Hệ số tăng ca (OT) -->
+                    <group string="⏱️ Hệ số tăng ca (OT)">
+                        <group string="Hệ số % (Nhân với lương giờ)">
+                            <field name="he_so_tang_ca_thuong"
+                                   help="VD: 1.5 = 150% lương giờ — tăng ca ngày thường"/>
+                            <field name="he_so_tang_ca_ngay_le"
+                                   help="VD: 3.0 = 300% lương giờ — tăng ca ngày lễ/Tết"/>
+                        </group>
+                        <group string="Tiền OT dự kiến cho 1 giờ">
+                            <field name="demo_tien_ot_thuong" widget="monetary" options="{'currency_field': false}" readonly="1"/>
+                            <field name="demo_tien_ot_ngay_le" widget="monetary" options="{'currency_field': false}" readonly="1"/>
+                            <field name="demo_tien_ot_thuong_ql" widget="monetary" options="{'currency_field': false}" readonly="1"/>
+                            <field name="demo_tien_ot_ngay_le_ql" widget="monetary" options="{'currency_field': false}" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- NHÓM 3: Quy định đi trễ -->
+                    <group string="🕐 Quy định xử lý đi trễ">
+                        <group>
+                            <field name="phat_di_tre_duoi_15"/>
+                            <field name="phat_di_tre_15_30"/>
+                        </group>
+                        <group>
+                            <field name="phat_di_tre_30_60"/>
+                            <div colspan="2" class="text-muted">
+                                <i>* Đi trễ trên 60 phút sẽ bị trừ nửa ngày công.</i>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- NHÓM 4: Quy định về sớm -->
+                    <group string="🔙 Quy định về sớm">
+                        <group>
+                            <field name="phat_ve_som_duoi_15"/>
+                            <field name="phat_ve_som_15_30"/>
+                        </group>
+                        <group>
+                            <div colspan="2" class="text-muted">
+                                <i>* Về sớm trên 30 phút sẽ bị trừ nửa ngày công.</i>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- NHÓM 5: Công chuẩn -->
+                    <group string="📅 Công chuẩn &amp; Giờ làm việc">
+                        <group>
+                            <field name="tong_gio_lam_thang"
+                                   help="Tổng số giờ làm việc trong một tháng"/>
+                            <field name="so_ngay_cong_chuan_thang"
+                                   help="Số ngày công tiêu chuẩn trong một tháng (Tự động tính: Tổng giờ / Số giờ chuẩn ngày)"
+                                   readonly="1" force_save="1"/>
+                            <field name="so_gio_chuan_ngay"
+                                   help="Số giờ làm tiêu chuẩn trong một ngày"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cau_hinh" model="ir.actions.act_window">
+        <field name="name">Cấu hình tính lương</field>
+        <field name="res_model">tinh_luong.cau_hinh</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_cau_hinh_form"/>
+    </record>
+
+    <!-- Thêm mục "Lương" vào menu Cấu hình của module nhan_su -->
+    <menuitem id="menu_cau_hinh_luong"
+              name="Lương"
+              parent="nhan_su.menu_cau_hinh_root"
+              action="action_cau_hinh"
+              sequence="40"/>
+</odoo>

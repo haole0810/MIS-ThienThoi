@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequence cho hợp đồng lao động -->
+        <record id="seq_nhan_su_hop_dong" model="ir.sequence">
+            <field name="name">Hợp đồng lao động</field>
+            <field name="code">nhan_su.hop_dong</field>
+            <field name="prefix">HD</field>
+            <field name="padding">4</field>
+        </record>
+
+        <record id="seq_tinh_luong_bang_luong" model="ir.sequence">
+            <field name="name">Bảng lương</field>
+            <field name="code">tinh_luong.bang_luong</field>
+            <field name="prefix">MBL</field>
+            <field name="padding">2</field>
+        </record>
+    </data>
+</odoo>

@@ -12,10 +12,35 @@ class NhanVien(models.Model):
     email = fields.Char(string='Email')
     phone = fields.Char(string='Số điện thoại')
     chuc_vu_id = fields.Many2one('nhan_su.chuc_vu', string='Chức vụ')
-    phong_ban_id = fields.Many2one('nhan_su.phong_ban', string='Phòng ban / Khu vực')    
+    phong_ban_id = fields.Many2one('nhan_su.phong_ban', string='Phòng ban / Khu vực')
+    
+    # Thông tin cá nhân (phục vụ hợp đồng)
+    ngay_sinh = fields.Date(string='Ngày sinh')
+    so_cmnd = fields.Char(string='Số CMND/CCCD')
+    ngay_cap_cmnd = fields.Date(string='Ngày cấp')
+    noi_cap_cmnd = fields.Char(string='Nơi cấp')
+    ho_khau_thuong_tru = fields.Char(string='Hộ khẩu thường trú')
+    dia_chi_lien_he = fields.Char(string='Địa chỉ liên hệ')
+    gioi_tinh = fields.Selection([('nam', 'Nam'), ('nu', 'Nữ'), ('khac', 'Khác')], string='Giới tính', default='nam')
     # Quan hệ
     ca_lam_id = fields.Many2one('nhan_su.ca_lam', string='Ca làm việc')
     cham_cong_ids = fields.One2many('nhan_su.cham_cong', 'nhan_vien_id', string='Dữ liệu chấm công')
+    hop_dong_ids = fields.One2many('nhan_su.hop_dong', 'nhan_vien_id', string='Hợp đồng lao động')
+    
+    # Cài đặt lương
+    luong_co_ban = fields.Float(string='Lương cơ bản', default=0.0)
+
+    # Quy tắc tính lương
+    he_so_ot = fields.Float(string='Hệ số OT', default=1.5, help='Hệ số tính tiền OT (ví dụ: 1.5 = 1.5 lần lương cơ bản)')
+    so_gio_chuan_ngay = fields.Float(string='Số giờ chuẩn/ngày', default=8.0)
+    so_ngay_cong_chuan_thang = fields.Float(string='Số ngày công chuẩn/tháng', default=26.0)
+    mien_phat_di_tre_phut = fields.Float(string='Miễn phạt đi trễ (phút)', default=0.0, help='Dung sai đi trễ trước khi tính phạt')
+    mien_phat_ve_som_phut = fields.Float(string='Miễn phạt về sớm (phút)', default=0.0, help='Dung sai về sớm trước khi tính phạt')
+    
+    # Mức phạt
+    phat_di_tre_moi_phut = fields.Float(string='Phạt đi trễ/phút', default=0.0)
+    phat_ve_som_moi_phut = fields.Float(string='Phạt về sớm/phút', default=0.0)
+
     @api.model
     def create(self, vals):
         if vals.get('ma_nv', 'Mới') == 'Mới':
@@ -33,8 +58,18 @@ class CaLam(models.Model):
     _description = 'Cấu hình ca làm việc'
 
     name = fields.Char(string='Tên ca', required=True)
-    gio_bat_dau = fields.Float(string='Giờ bắt đầu (h)', required=True) # Ví dụ: 8.0
-    gio_ket_thuc = fields.Float(string='Giờ kết thúc (h)', required=True) # Ví dụ: 17.0
+    gio_bat_dau = fields.Float(string='Giờ bắt đầu tổng (h)', required=True) # Ví dụ: 7.5
+    gio_ket_thuc = fields.Float(string='Giờ kết thúc tổng (h)', required=True) # Ví dụ: 17.5
+    
+    # Chi tiết để in hợp đồng
+    sang_tu = fields.Float(string='Sáng từ (h)', default=7.5)
+    sang_den = fields.Float(string='Sáng đến (h)', default=11.5)
+    chieu_tu = fields.Float(string='Chiều từ (h)', default=13.5)
+    chieu_den = fields.Float(string='Chiều đến (h)', default=17.5)
+    so_gio_ngay = fields.Float(string='Số giờ/ngày', default=8.0)
+    so_ngay_tuan = fields.Integer(string='Số ngày/tuần', default=6)
+    tu_thu = fields.Selection([('2', 'Thứ 2'), ('3', 'Thứ 3')], string='Từ thứ', default='2')
+    den_thu = fields.Selection([('7', 'Thứ 7'), ('cn', 'Chủ nhật')], string='Đến thứ', default='7')
 
 class ChamCong(models.Model):
     _name = 'nhan_su.cham_cong'
@@ -54,6 +89,9 @@ class ChamCong(models.Model):
         ('ve_som', 'Về sớm'),
         ('vi_pham', 'Trễ/Sớm')
     ], string='Trạng thái', compute='_compute_attendance_data', store=True)
+
+    thoi_gian_tre = fields.Char(string='Đi trễ', compute='_compute_vi_pham_chi_tiet', store=True)
+    thoi_gian_ve_som = fields.Char(string='Về sớm', compute='_compute_vi_pham_chi_tiet', store=True)
     
     @api.depends('gio_vao', 'gio_ra', 'nhan_vien_id.ca_lam_id')
     def _compute_attendance_data(self):
@@ -100,23 +138,6 @@ class ChamCong(models.Model):
                 rec.trang_thai = 'di_tre'
             elif is_early:
                 rec.trang_thai = 've_som'
-    class PhongBan(models.Model):
-        _name = 'nhan_su.phong_ban'
-        _description = 'Phòng ban / Bộ phận'
-
-        name = fields.Char(string='Tên phòng ban', required=True)
-        ma_phong = fields.Char(string='Mã phòng')
-        ghi_chu = fields.Text(string='Ghi chú khu vực')
-    class ChucVu(models.Model):
-        _name = 'nhan_su.chuc_vu'
-        _description = 'Chức vụ nhân sự'
-
-        name = fields.Char(string='Tên chức vụ', required=True)
-        ma_chuc_vu = fields.Char(string='Mã chức vụ')
-        ghi_chu = fields.Text(string='Mô tả công việc')
-
-    thoi_gian_tre = fields.Char(string='Đi trễ', compute='_compute_vi_pham_chi_tiet', store=True)
-    thoi_gian_ve_som = fields.Char(string='Về sớm', compute='_compute_vi_pham_chi_tiet', store=True)
 
     @api.depends('gio_vao', 'gio_ra', 'nhan_vien_id.ca_lam_id')
     def _compute_vi_pham_chi_tiet(self):
@@ -171,3 +192,61 @@ class ChamCong(models.Model):
                     if m > 0: txt.append(f"{int(m)}p")
                     txt.append(f"{int(s)}s")
                     rec.thoi_gian_ve_som = "Sớm " + " ".join(txt)
+
+    def _sync_payroll_for_attendance(self, previous_values=None):
+        payroll_model = self.env['tinh_luong.bang_luong']
+        for record in self:
+            payroll_model._recompute_employee_payrolls(
+                record.nhan_vien_id,
+                record.ngay,
+                record.ngay,
+            )
+            if previous_values and record.id in previous_values:
+                old_employee, old_date = previous_values[record.id]
+                if old_employee and old_date and (
+                    old_employee.id != record.nhan_vien_id.id or old_date != record.ngay
+                ):
+                    payroll_model._recompute_employee_payrolls(old_employee, old_date, old_date)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_payroll_for_attendance()
+        return records
+
+    def write(self, vals):
+        previous_values = {
+            record.id: (record.nhan_vien_id, record.ngay)
+            for record in self
+        }
+        result = super().write(vals)
+        self._sync_payroll_for_attendance(previous_values)
+        return result
+
+    def unlink(self):
+        previous_values = {
+            record.id: (record.nhan_vien_id, record.ngay)
+            for record in self
+        }
+        result = super().unlink()
+        payroll_model = self.env['tinh_luong.bang_luong']
+        for employee, date_value in previous_values.values():
+            if employee and date_value:
+                payroll_model._recompute_employee_payrolls(employee, date_value, date_value)
+        return result
+
+class PhongBan(models.Model):
+    _name = 'nhan_su.phong_ban'
+    _description = 'Phòng ban / Bộ phận'
+
+    name = fields.Char(string='Tên phòng ban', required=True)
+    ma_phong = fields.Char(string='Mã phòng')
+    ghi_chu = fields.Text(string='Ghi chú khu vực')
+
+class ChucVu(models.Model):
+    _name = 'nhan_su.chuc_vu'
+    _description = 'Chức vụ nhân sự'
+
+    name = fields.Char(string='Tên chức vụ', required=True)
+    ma_chuc_vu = fields.Char(string='Mã chức vụ')
+    ghi_chu = fields.Text(string='Mô tả công việc')

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_nhan_vien_form_inherit_tinh_luong" model="ir.ui.view">
+        <field name="name">nhan_su.nhan_vien.form.inherit.tinh_luong</field>
+        <field name="model">nhan_su.nhan_vien</field>
+        <field name="inherit_id" ref="nhan_su.view_nhan_vien_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Hợp đồng" name="contracts_tab">
+                    <field name="hop_dong_ids" readonly="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="loai_hop_dong" string="Loại hợp đồng"/>
+                            <field name="ngay_bat_dau"/>
+                            <field name="ngay_ket_thuc"/>
+                            <field name="state" widget="badge" 
+                                   decoration-info="state == 'draft'" 
+                                   decoration-success="state == 'active'" 
+                                   decoration-warning="state == 'expiring'"
+                                   decoration-danger="state == 'expired'"
+                                   decoration-muted="state == 'cancel'"
+                                   string="Trạng thái"/>
+                            <field name="file_hop_dong_name" string="File đã ký" optional="show"/>
+                            <field name="file_hop_dong_da_ky" widget="binary" string="Tải file" filename="file_hop_dong_name" optional="show"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

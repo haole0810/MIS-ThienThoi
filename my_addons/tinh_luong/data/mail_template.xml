@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_template_payslip" model="mail.template">
+            <field name="name">Email Bảng lương - Tinh Luong</field>
+            <field name="model_id" ref="model_tinh_luong_bang_luong_line"/>
+            <field name="email_from">{{ (user.email or 'noreply@company.local') }}</field>
+            <field name="subject">Bảng lương {{ object.bang_luong_id.name }} - {{ object.ma_nv }}</field>
+            <field name="email_to">{{ object.nhan_vien_id.email }}</field>
+            <field name="body_html"><![CDATA[
+                <div>
+                    <p>Xin chào <t t-esc="object.nhan_vien_id.name"/>,</p>
+                    <p>Đây là bảng lương của bạn cho kỳ <strong><t t-esc="object.bang_luong_id.name"/></strong>:</p>
+                    <table border="0" cellpadding="4">
+                        <tr><td><strong>Lương cơ bản</strong></td><td><t t-esc="object.luong_co_ban"/></td></tr>
+                        <tr><td><strong>Lương giờ</strong></td><td><t t-esc="object.luong_gio"/></td></tr>
+                        <tr><td><strong>Giờ công thực tế</strong></td><td><t t-esc="object.gio_cong_thuc_te"/></td></tr>
+                        <tr><td><strong>Giờ OT</strong></td><td><t t-esc="object.gio_ot"/></td></tr>
+                        <tr><td><strong>Tiền OT</strong></td><td><t t-esc="object.tien_ot"/></td></tr>
+                        <tr><td><strong>Phạt đi trễ</strong></td><td><t t-esc="object.tien_phat_di_tre"/></td></tr>
+                        <tr><td><strong>Phạt về sớm</strong></td><td><t t-esc="object.tien_phat_ve_som"/></td></tr>
+                        <tr><td><strong>Tổng lương</strong></td><td><t t-esc="object.tong_luong"/></td></tr>
+                    </table>
+                    <p>Trân trọng,<br/><t t-esc="user.name"/></p>
+                </div>
+            ]]></field>
+        </record>
+    </data>
+</odoo>

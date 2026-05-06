@@ -2,6 +2,7 @@ from odoo import models, fields, api
 
 class NghiPhep(models.Model):
     _name = 'nhan_su.nghi_phep'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Nghỉ phép'
 
     nhan_vien_id = fields.Many2one('nhan_su.nhan_vien', string='Nhân viên', required=True, tracking=True)
@@ -27,6 +28,11 @@ class NghiPhep(models.Model):
 
     def action_validate(self):
         self.state = 'validate'
+        self.env['tinh_luong.bang_luong']._recompute_employee_payrolls(
+            self.nhan_vien_id,
+            self.ngay_nghi,
+            self.ngay_nghi,
+        )
 
     def action_refuse(self):
         self.state = 'refuse'

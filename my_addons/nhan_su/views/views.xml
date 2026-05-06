@@ -9,7 +9,44 @@
                 <field name="name"/>
                 <field name="gio_bat_dau" widget="float_time"/>
                 <field name="gio_ket_thuc" widget="float_time"/>
+                <field name="so_ngay_tuan"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="view_ca_lam_form" model="ir.ui.view">
+        <field name="name">nhan_su.ca_lam.form</field>
+        <field name="model">nhan_su.ca_lam</field>
+        <field name="arch" type="xml">
+            <form string="Ca làm việc">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="so_gio_ngay" widget="float_time"/>
+                            <field name="so_ngay_tuan"/>
+                        </group>
+                        <group>
+                            <label for="tu_thu" string="Lịch làm việc"/>
+                            <div class="o_row">
+                                Từ <field name="tu_thu"/> đến <field name="den_thu"/>
+                            </div>
+                            <field name="gio_bat_dau" widget="float_time" string="Giờ bắt đầu tổng"/>
+                            <field name="gio_ket_thuc" widget="float_time" string="Giờ kết thúc tổng"/>
+                        </group>
+                    </group>
+                    <group string="Chi tiết in hợp đồng (Sáng/Chiều)">
+                        <group>
+                            <field name="sang_tu" widget="float_time"/>
+                            <field name="sang_den" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="chieu_tu" widget="float_time"/>
+                            <field name="chieu_den" widget="float_time"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 
@@ -97,7 +134,7 @@
                             </form>
                         </field>
                     </page>
-                </notebook>
+                 </notebook>
             </sheet>
         </form>
     </field>

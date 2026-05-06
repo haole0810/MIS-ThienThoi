@@ -18,14 +18,18 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'mail'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/hop_dong_upload_access.xml',
+        'data/cron_data.xml',
         'views/views.xml',
         'views/templates.xml',
         'views/nghi_phep_views.xml',
+        'views/hop_dong_views.xml',
+        'views/hop_dong_upload_wizard_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

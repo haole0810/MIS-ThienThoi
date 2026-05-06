@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Hợp đồng lao động - Tree View -->
+    <record id="view_hop_dong_tree" model="ir.ui.view">
+        <field name="name">nhan_su.hop_dong.tree</field>
+        <field name="model">nhan_su.hop_dong</field>
+        <field name="arch" type="xml">
+            <tree string="Hợp đồng">
+                <field name="name" string="Số hợp đồng"/>
+                <field name="loai_hop_dong" string="Loại hợp đồng"/>
+                <field name="nhan_vien_id" string="Nhân viên"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'draft'" 
+                       decoration-success="state == 'active'" 
+                       decoration-warning="state == 'expiring'"
+                       decoration-danger="state == 'expired'"
+                       decoration-muted="state == 'cancel'"
+                       string="Trạng thái"/>
+                <button name="action_export_docx" string="Tải hợp đồng (Word)" type="object" icon="fa-file-word-o" class="btn-primary"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Hợp đồng lao động - Form View -->
+    <record id="view_hop_dong_form" model="ir.ui.view">
+        <field name="name">nhan_su.hop_dong.form</field>
+        <field name="model">nhan_su.hop_dong</field>
+        <field name="arch" type="xml">
+            <form string="Hợp đồng">
+                <header>
+                    <button name="action_export_docx" string="Tải mẫu hợp đồng (Word)" type="object" class="oe_highlight" icon="fa-file-word-o"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,expiring,expired"/>
+                </header>
+                <sheet>
+                    <!-- Hidden dependency fields to trigger on-the-fly client side computation on load -->
+                    <group invisible="1">
+                        <field name="name"/>
+                        <field name="loai_hop_dong"/>
+                        <field name="nhan_vien_id"/>
+                        <field name="ngay_ky"/>
+                        <field name="dia_diem_ky"/>
+                        <field name="cong_viec_phai_lam"/>
+                        <field name="luong_co_ban"/>
+                        <field name="phu_cap_an_trua"/>
+                        <field name="phu_cap_dien_thoai"/>
+                        <field name="phu_cap_xang_xe"/>
+                        <field name="thoi_gio_lam_viec"/>
+                        <field name="thoi_gian_nghi"/>
+                    </group>
+                    <div style="display: none;">
+                        <style>
+                            /* Hide Create/New button in form control panel */
+                            .o_control_panel .o_form_button_create,
+                            .o_control_panel button.o_form_button_create,
+                            .o_control_panel .o-form-button-create,
+                            .o_control_panel button.o-form-button-create {
+                                display: none !important;
+                            }
+                        </style>
+                    </div>
+                    <field name="contract_preview" widget="html" readonly="1" nolabel="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Hành động cho Hợp đồng Chính thức -->
+    <record id="action_hop_dong_chinh_thuc" model="ir.actions.act_window">
+        <field name="name">Hợp đồng chính thức</field>
+        <field name="res_model">nhan_su.hop_dong</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'default_loai_hop_dong': '36_thang', 'form_view_initial_mode': 'edit'}</field>
+    </record>
+
+    <!-- Hành động cho Hợp đồng Thử việc -->
+    <record id="action_hop_dong_thu_viec" model="ir.actions.act_window">
+        <field name="name">Hợp đồng thử việc</field>
+        <field name="res_model">nhan_su.hop_dong</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'default_loai_hop_dong': 'thu_viec', 'form_view_initial_mode': 'edit'}</field>
+    </record>
+
+    <!-- Menu Hợp đồng -->
+    <menuitem id="menu_hop_dong_root"
+              name="Hợp đồng"
+              parent="menu_nhan_su_root"
+              sequence="30"/>
+
+    <menuitem id="menu_hop_dong_chinh_thuc"
+              name="Hợp đồng chính thức"
+              parent="menu_hop_dong_root"
+              action="action_hop_dong_chinh_thuc"
+              sequence="10"/>
+
+    <menuitem id="menu_hop_dong_thu_viec"
+              name="Hợp đồng thử việc"
+              parent="menu_hop_dong_root"
+              action="action_hop_dong_thu_viec"
+              sequence="20"/>
+
+    <!-- Upload hợp đồng đã ký action -->
+    <record id="action_hop_dong_upload_wizard" model="ir.actions.act_window">
+        <field name="name">Upload hợp đồng đã ký</field>
+        <field name="res_model">nhan_su.hop_dong.upload</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_hop_dong_upload"
+              name="Upload hợp đồng đã ký"
+              parent="menu_hop_dong_root"
+              action="action_hop_dong_upload_wizard"
+              sequence="30"/>
+</odoo>
