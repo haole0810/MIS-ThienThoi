@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit form view for MOMO payment -->
+        <record id="view_don_hang_form_payment_inherit" model="ir.ui.view">
+            <field name="name">don_hang.form.payment.inherit</field>
+            <field name="model">don_hang_banh_trang.don_hang</field>
+            <field name="inherit_id" ref="don_hang_banh_trang.view_don_hang_form"/>
+            <field name="arch" type="xml">
+                <!-- Add payment method under ngay_tao -->
+                <xpath expr="//field[@name='ngay_tao']" position="after">
+                    <field name="payment_method" 
+                           readonly="trang_thai in ('dong_goi','xuat_kho','huy')"
+                           required="trang_thai=='xac_nhan'"
+                           options="{'no_create': True}"/>
+                    <!-- QR display -->
+                    <field name="qr_momo_data" 
+                           widget="image" 
+                           class="oe_image_medium"
+                           invisible="payment_method != 'momo_qr' or qr_momo_data == False"
+                           placeholder="don_hang_banh_trang.static/description/qr_placeholder.png"
+                           title="QR MOMO - Quét để thanh toán"/>
+                    <field name="momo_partner_phone" invisible="1"/>
+                </xpath>
+
+                <!-- New MOMO confirm button in header -->
+                <xpath expr="//button[@name='action_dong_goi']" position="after">
+                    <button name="action_xac_nhan_thanh_toan"
+                            string="✅ Xác nhận TT MOMO"
+                            type="object"
+                            class="oe_highlight btn-success"
+                            invisible="payment_method != 'momo_qr' or trang_thai != 'xac_nhan'"
+                            confirm="Xác nhận khách đã thanh toán MOMO? Sẽ chuyển sang Đóng gói."/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

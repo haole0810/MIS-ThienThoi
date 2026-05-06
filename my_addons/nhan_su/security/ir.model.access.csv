@@ -4,5 +4,9 @@ access_nhan_vien,nhan_su.nhan_vien,model_nhan_su_nhan_vien,base.group_user,1,1,1
 access_cham_cong,nhan_su.cham_cong,model_nhan_su_cham_cong,base.group_user,1,1,1,1
 access_phong_ban,nhan_su.phong_ban,model_nhan_su_phong_ban,base.group_user,1,1,1,1
 access_chuc_vu,nhan_su.chuc_vu,model_nhan_su_chuc_vu,base.group_user,1,1,1,1
+<<<<<<< HEAD
+access_nhan_su_nghi_phep,access_nhan_su_nghi_phep,model_nhan_su_nghi_phep,base.group_user,1,1,1,1
+=======
 access_nhan_su_nghi_phep,access_nhan_su_nghi_phep,model_nhan_su_nghi_phep,base.group_user,1,1,1,1
 access_hop_dong,nhan_su.hop_dong,model_nhan_su_hop_dong,base.group_user,1,1,1,1
+>>>>>>> 13f61dd5f28befafbc55261a136edaba90abe4e7
