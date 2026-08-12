@@ -66,7 +66,7 @@
 
             <!-- Nút Xem Phiếu Xuất: hiện khi đã xuất kho -->
             <button name="action_xem_phieu_xuat"
-                    string="Xem Phiếu Xuất Kho"
+                    string="📋 Xem Phiếu Xuất Kho"
                     type="object"
                     invisible="trang_thai != 'xuat_kho'"/>
 
@@ -77,6 +77,14 @@
                     class="btn-danger"
                     confirm="Bạn có chắc chắn muốn hủy đơn hàng này không?"
                     invisible="trang_thai in ('xuat_kho', 'huy')"/>
+
+            <!-- Nút Xác nhận TT MOMO: chỉ hiện khi chọn MOMO QR -->
+            <button name="action_xac_nhan_thanh_toan"
+                    string="✅ Xác nhận TT MOMO"
+                    type="object"
+                    class="oe_highlight btn-success"
+                    invisible="payment_method != 'momo_qr' or trang_thai != 'xac_nhan'"
+                    confirm="Xác nhận khách đã thanh toán MOMO? Sẽ chuyển sang Đóng gói."/>
           </header>
 
           <!-- ── Nội dung form ───────────────────────────────────────────── -->
@@ -91,7 +99,7 @@
             <!-- Banner đã xuất kho -->
             <div class="alert alert-success" role="alert"
                  invisible="trang_thai != 'xuat_kho'">
-              <strong>Đơn hàng đã xuất kho thành công!</strong>
+              <strong>✅ Đơn hàng đã xuất kho thành công!</strong>
               Phiếu xuất kho:
               <field name="phieu_xuat_id" readonly="1" nolabel="1"/>
             </div>
@@ -113,6 +121,11 @@
                        readonly="trang_thai in ('dong_goi','xuat_kho','huy')"/>
                 <field name="ngay_tao"
                        readonly="trang_thai in ('dong_goi','xuat_kho','huy')"/>
+                <!-- Payment Method -->
+                <field name="payment_method"
+                       readonly="trang_thai in ('dong_goi','xuat_kho','huy')"
+                       required="trang_thai=='xac_nhan'"
+                       options="{'no_create': True}"/>
               </group>
               <group string="Thông tin xuất kho">
                 <field name="kho_id"
@@ -147,10 +160,29 @@
                 </group>
               </page>
 
-              <page string="Ghi chú">
+              <page string="📝 Ghi chú">
                 <field name="ghi_chu"
                        readonly="trang_thai in ('dong_goi','xuat_kho','huy')"
                        placeholder="Ghi chú thêm về đơn hàng..."/>
+              </page>
+
+              <page string="💳 QR MOMO Thanh toán" invisible="payment_method != 'momo_qr'">
+                <group>
+                  <group string="Thông tin thanh toán">
+                    <field name="tong_tien" readonly="1" widget="monetary" options="{'currency_field': False}"/>
+                    <field name="ma_don_hang" readonly="1"/>
+                  </group>
+                  <group string="Mã QR Code">
+                    <field name="qr_momo_data" 
+                           widget="image" 
+                           readonly="1"
+                           invisible="not qr_momo_data"
+                           nolabel="1"/>
+                  </group>
+                </group>
+                <p invisible="qr_momo_data" class="alert alert-info">
+                  <strong>Hãy nhấn "Đóng gói" để tạo mã QR thanh toán</strong>
+                </p>
               </page>
             </notebook>
           </sheet>
@@ -226,7 +258,7 @@
           Tạo đơn hàng mới!
         </p>
         <p>
-          Nhấn Tạo mới để bắt đầu một đơn hàng bánh tráng.
+          Nhấn <b>Tạo mới</b> để bắt đầu một đơn hàng bánh tráng.
         </p>
       </field>
     </record>

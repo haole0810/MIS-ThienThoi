@@ -9,11 +9,16 @@
                 <field name="name"/>
                 <field name="gio_bat_dau" widget="float_time"/>
                 <field name="gio_ket_thuc" widget="float_time"/>
+<<<<<<< HEAD
+=======
                 <field name="so_ngay_tuan"/>
+>>>>>>> 13f61dd5f28befafbc55261a136edaba90abe4e7
             </tree>
         </field>
     </record>
 
+<<<<<<< HEAD
+=======
     <record id="view_ca_lam_form" model="ir.ui.view">
         <field name="name">nhan_su.ca_lam.form</field>
         <field name="model">nhan_su.ca_lam</field>
@@ -50,6 +55,7 @@
         </field>
     </record>
 
+>>>>>>> 13f61dd5f28befafbc55261a136edaba90abe4e7
 <record id="view_nhan_vien_tree" model="ir.ui.view">
         <field name="name">nhan_su.nhan_vien.tree</field>
         <field name="model">nhan_su.nhan_vien</field>
@@ -134,7 +140,11 @@
                             </form>
                         </field>
                     </page>
+<<<<<<< HEAD
+                </notebook>
+=======
                  </notebook>
+>>>>>>> 13f61dd5f28befafbc55261a136edaba90abe4e7
             </sheet>
         </form>
     </field>

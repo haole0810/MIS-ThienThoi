@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+import base64
+import io
+import time
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
@@ -69,6 +74,15 @@ class DonHang(models.Model):
         store=True,
     )
 
+
+    # ─── Thanh toán MOMO ────────────────────────────────────────────────────────
+    payment_method = fields.Selection([
+        ('tien_mat', 'Tiền mặt'),
+        ('momo_qr', 'MOMO QR'),
+    ], string='Phương thức thanh toán', default='tien_mat', tracking=True)
+    qr_momo_data = fields.Binary(string='Mã QR MOMO', compute='_compute_qr_momo')
+    momo_partner_phone = fields.Char(string='SĐT MOMO', default='0852123456')
+
     # ─── Trạng thái ──────────────────────────────────────────────────────────────
     trang_thai = fields.Selection([
         ('xac_nhan', 'Xác nhận'),
@@ -98,6 +112,28 @@ class DonHang(models.Model):
         for rec in self:
             rec.tong_so_luong = sum(line.so_luong for line in rec.chi_tiet_ids)
             rec.tong_tien = sum(line.thanh_tien for line in rec.chi_tiet_ids)
+    @api.depends('payment_method', 'tong_tien', 'loai_khach_hang', 'ma_don_hang')
+    def _compute_qr_momo(self):
+        for rec in self:
+            rec.qr_momo_data = False
+            if rec.payment_method == 'momo_qr' and rec.tong_tien > 0 and rec.ma_don_hang != 'Mới':
+                try:
+                    import qrcode
+                    partner_phone = rec.momo_partner_phone or '0852123456'
+                    amount = int(rec.tong_tien_sau_giam * 100)  # MOMO uses cents? No, VND
+                    req_time = str(int(time.time() * 1000))
+                    url = f"momodeep://qr?partnerCode=placeholder&amount={rec.tong_tien_sau_giam}&orderId={rec.ma_don_hang}&reqTime={req_time}&phone={partner_phone}"
+                    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+                    qr.add_data(url)
+                    qr.make(fit=True)
+                    img = qr.make_image(fill_color="black", back_color="white")
+                    buffer = io.BytesIO()
+                    img.save(buffer, format='PNG')
+                    rec.qr_momo_data = base64.b64encode(buffer.getvalue())
+                except ImportError:
+                    rec.message_post(body="Cài đặt: pip install qrcode[pil]")
+                except Exception as e:
+                    rec.message_post(body=f"Lỗi QR: {str(e)}")
 
     # ─── Readonly helper ─────────────────────────────────────────────────────────
     @property
@@ -107,6 +143,10 @@ class DonHang(models.Model):
 
     # ─── Hành động ───────────────────────────────────────────────────────────────
     def action_dong_goi(self):
+        """Chuyển sang bước Đóng gói nếu tiền mặt, tạo QR nếu MOMO."""
+        for rec in self:
+            if rec.trang_thai != 'xac_nhan':
+                raise UserError('Chỉ có thể thực hiện từ trạng thái Xác nhận.')
         """Chuyển sang bước Đóng gói. Khóa mọi thao tác chỉnh sửa."""
         for rec in self:
             if rec.trang_thai != 'xac_nhan':
@@ -120,6 +160,30 @@ class DonHang(models.Model):
                     self.env['ir.sequence'].next_by_code('don_hang_banh_trang.don_hang')
                     or 'DH001'
                 )
+
+            if rec.payment_method == 'momo_qr':
+                rec._compute_qr_momo()
+                if not rec.qr_momo_data:
+                    raise UserError("Lỗi tạo QR MOMO. Vui lòng cài qrcode[pil]: pip install qrcode[pil]")
+                
+                # Tạo attachment cho QR code
+                attachment = self.env['ir.attachment'].create({
+                    'name': f'QR_MOMO_{rec.ma_don_hang}.png',
+                    'type': 'binary',
+                    'datas': rec.qr_momo_data,
+                    'res_model': rec._name,
+                    'res_id': rec.id,
+                })
+                
+                # Gửi message với attachment QR
+                rec.message_post(
+                    body=f"<b>🧾 QR MOMO:</b> Số tiền: <b>{rec.tong_tien}</b> VNĐ - Mã đơn: <b>{rec.ma_don_hang}</b>",
+                    attachment_ids=[attachment.id]
+                )
+                return  # Stay xac_nhan for confirm
+
+            rec.trang_thai = 'dong_goi'
+            rec.message_post(body=f'Đơn <b>{rec.ma_don_hang}</b> (tiền mặt) → Đóng gói.')
             rec.trang_thai = 'dong_goi'
             rec.message_post(body=f'Đơn hàng {rec.ma_don_hang} đã chuyển sang bước Đóng gói.')
 
@@ -183,6 +247,8 @@ class DonHang(models.Model):
             rec.trang_thai = 'xuat_kho'
             rec.message_post(
                 body=(
+                    f'Đơn hàng <b>{rec.ma_don_hang}</b> đã <b>Xuất kho</b> thành công. '
+                    f'Phiếu xuất: <b>{phieu_xuat.ma_phieu}</b>.'
                     f'Đơn hàng {rec.ma_don_hang} đã {phieu_xuat.ma_phieu} thành công. '
                 )
             )
@@ -193,6 +259,7 @@ class DonHang(models.Model):
             if rec.trang_thai == 'xuat_kho':
                 raise UserError('Không thể hủy đơn hàng đã xuất kho.')
             rec.trang_thai = 'huy'
+            rec.message_post(body=f'Đơn hàng <b>{rec.ma_don_hang}</b> đã bị <b>Hủy</b>.')
             rec.message_post(body=f'Đơn hàng {rec.ma_don_hang} đã bị Hủy.')
 
     def action_ve_xac_nhan(self):
@@ -201,6 +268,15 @@ class DonHang(models.Model):
             if rec.trang_thai != 'dong_goi':
                 raise UserError('Chỉ có thể đưa về Xác nhận từ trạng thái Đóng gói.')
             rec.trang_thai = 'xac_nhan'
+
+    def action_xac_nhan_thanh_toan(self):
+        """Xác nhận MOMO thanh toán xong → đóng gói."""
+        for rec in self:
+            if rec.payment_method != 'momo_qr' or rec.trang_thai != 'xac_nhan':
+                raise UserError("Chỉ dành cho MOMO tại Xác nhận.")
+            # Trực tiếp chuyển sang Đóng gói mà không cần tạo QR lại
+            rec.trang_thai = 'dong_goi'
+            rec.message_post(body=f"✅ Xác nhận TT MOMO {rec.ten_khach_hang} → Đóng gói.")
 
     def action_xem_phieu_xuat(self):
         """Mở phiếu xuất kho liên quan."""
